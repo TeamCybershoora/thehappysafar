@@ -126,7 +126,7 @@ export default function Navbar() {
 
         <div className="navbar__actions">
           <div className="theme-wrapper">
-            <button
+            {/* <button
               type="button"
               onClick={toggleTheme}
               aria-label="Toggle theme"
@@ -138,7 +138,7 @@ export default function Navbar() {
               ) : (
                 <SunIcon className="icon" size={24} />
               )}
-            </button>
+            </button> */}
           </div>
           <button
             type="button"
