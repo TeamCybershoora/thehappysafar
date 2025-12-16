@@ -2,6 +2,7 @@
 
 import { gsap } from "gsap";
 import React, { useEffect, useMemo, useRef } from "react";
+import CurvedLoop from "./CurvedLoop";
 
 const DEFAULT_PEEP_FRAMES = Array.from({ length: 50 }, (_, idx) => [`/images/peeps/${idx + 1}.svg`]).flat();
 
@@ -349,6 +350,9 @@ const Skiper39 = () => {
       <div className="pointer-events-none absolute inset-x-0 top-4 flex justify-center text-base uppercase tracking-[0.7em] text-orange-500">
         Thanks for Visiting
       </div>
+       <div className="pt-31">
+         <CurvedLoop marqueeText="The Happy Safar ✦ Across India ✦ Custom Trips ✦" speed={7} curveAmount={-200} />
+       </div>
       <CrowdCanvas rows={15} cols={7} />
     </div>
   );

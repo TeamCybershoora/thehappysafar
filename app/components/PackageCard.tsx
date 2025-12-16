@@ -101,8 +101,12 @@ export default function PackageCard({
           className="fixed inset-0 z-100 flex items-center justify-center overflow-y-auto bg-black/50 backdrop-blur-sm px-4 py-10 sm:py-16"
           onWheelCapture={(e) => e.stopPropagation()}
           onWheel={(e) => e.stopPropagation()}
+          onClick={() => setShowModal(false)}
         >
-          <div className="w-full max-w-md overflow-hidden rounded-2xl bg-white p-5 shadow-2xl sm:p-6">
+          <div
+            className="w-full max-w-md overflow-hidden rounded-2xl bg-white p-5 shadow-2xl sm:p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="modal-scroll space-y-4">
               <div className="flex items-start justify-between gap-4">
                 <div>

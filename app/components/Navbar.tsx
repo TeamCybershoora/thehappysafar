@@ -171,7 +171,11 @@ export default function Navbar() {
         </div>
       </header>
 
-      <div className={`navbar__overlay ${isMenuOpen ? "visible" : ""}`} aria-hidden="true" />
+      <div
+        className={`navbar__overlay ${isMenuOpen ? "visible" : ""}`}
+        aria-hidden="true"
+        onClick={() => setIsMenuOpen(false)}
+      />
 
       <style jsx>{`
         .navbar {

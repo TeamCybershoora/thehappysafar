@@ -9,11 +9,13 @@ import FaqSection from "./components/FaqSection";
 import WhyChooseUs from "./components/WhyChooseUs";
 import ContactSection from "./components/ContactSection";
 import { Skiper39 } from "./components/skiper39";
+import CurvedLoop from "./components/CurvedLoop";
 
 export default function Home() {
   return (
     <>
       <Hero />
+     
       <div className="space-y-8 bg-linear-to-b from-amber-50 via-white to-white">
         <About />
         <section

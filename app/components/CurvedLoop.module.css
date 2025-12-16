@@ -1,0 +1,43 @@
+.jacket {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  background: #00000000;
+  margin-top: -0.5rem;
+  padding: 0 0 0.2rem 0;
+}
+
+.inner {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.svg {
+  user-select: none;
+  width: 100%;
+  aspect-ratio: 100 / 12;
+  overflow: visible;
+  display: block;
+  font-size: clamp(3rem, 12vw, 6rem);
+  fill: #f46f12;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+@media (min-width: 768px) {
+  .jacket {
+    margin-top: -1.5rem;
+    padding: 1.5rem 0rem 1rem 0rem;
+  }
+
+  .inner {
+    padding: 0 2rem;
+  }
+
+  .svg {
+    font-size: clamp(2rem, 2vw, 3rem);
+  }
+}

@@ -15,7 +15,7 @@ const contactDetails = [
   },
   {
     label: "Our Location",
-    value: "Studio 07, Apna Bazar, Upasana Tower, Jaipur",
+    value: "Saraswati Tower, F-30, Sector 2, Central Spine, Vidyadhar Nagar, Jaipur, Rajasthan 302039",
     icon: MapPin,
   },
 ];

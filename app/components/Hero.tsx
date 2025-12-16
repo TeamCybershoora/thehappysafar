@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import CurvedLoop from "../components/CurvedLoop";
 
 const HERO_BG =
   "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80";
@@ -69,7 +70,9 @@ export default function Hero() {
                 </button>
               ))}
             </div>
+             
           </div>
+          
         </div>
 
         {isEnquireOpen && (
@@ -103,6 +106,7 @@ export default function Hero() {
             </div>
           </div>
         )}
+         <CurvedLoop marqueeText="The Happy Safar ✦ Across India ✦ Custom Trips ✦" speed={7} curveAmount={200} />
       </div>
 
       <style jsx>{`
