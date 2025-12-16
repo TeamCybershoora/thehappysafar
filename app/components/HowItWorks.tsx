@@ -4,21 +4,21 @@ import { CalendarCheck2, ClipboardList, Ticket } from "lucide-react";
 const steps = [
   {
     id: "01",
-    title: "Choose Package",
+    title: "Choose Rajasthan Circuit",
     description:
-      "Select your India route—mountains, coasts, deserts, or multi-city circuits—and pick travel dates plus stay/transfer upgrades that match your style.",
+      "Pick a signature loop—Jaipur + Udaipur, Marwar dunes, Aravalli wellness—or share the cities you want blended together.",
     icon: Ticket,
   },
   {
     id: "02",
-    title: "Fill in Your Details",
-    description: "Share traveller info plus preferences so we can lock flawless logistics and special touches.",
+    title: "Share Rituals & Details",
+    description: "Tell us your crew size, pace, and wish-list. We tailor palace stays, drives, storytellers, and meals around it.",
     icon: ClipboardList,
   },
   {
     id: "03",
-    title: "Receive Confirmation",
-    description: "Get instant confirmation by email/WhatsApp with day-by-day plans and on-ground contacts.",
+    title: "Confirm & Journey Easy",
+    description: "Get a WhatsApp-ready plan with chauffeurs, hosts, and concierge support. Approve to unlock seamless execution.",
     icon: CalendarCheck2,
   },
 ];

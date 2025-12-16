@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { MoonIcon } from "../components/ui/moon";
 import { SunIcon } from "../components/ui/sun";
 import { MenuIcon, type MenuIconHandle } from "../components/ui/menu";
@@ -10,6 +11,7 @@ import { useTheme } from "./ThemeProvider";
 
 
 import { gsap } from "gsap";
+import { persistAdminSession, isAdminSessionActive } from "../lib/adminSession";
 
 const navLinks = [
   { href: "#home", label: "Home" },
@@ -21,11 +23,18 @@ const navLinks = [
 
 export default function Navbar() {
   const { theme, toggleTheme } = useTheme();
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNavHidden, setIsNavHidden] = useState(false);
+  const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
+  const [adminPassword, setAdminPassword] = useState("");
+  const [adminError, setAdminError] = useState("");
+  const [isAdminSubmitting, setIsAdminSubmitting] = useState(false);
   const menuIconRef = useRef<MenuIconHandle | null>(null);
   const menuButtonRef = useRef<HTMLButtonElement | null>(null);
   const mobileMenuRef = useRef<HTMLDivElement | null>(null);
+  const secretClickCountRef = useRef(0);
+  const secretClickTimerRef = useRef<number | null>(null);
 
   const handleAnchorNav = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (!href.startsWith("#")) return;
@@ -48,6 +57,92 @@ export default function Navbar() {
     }
     return () => document.body.classList.remove("nav-lock");
   }, [isMenuOpen]);
+
+  useEffect(() => {
+    if (!isAdminModalOpen) return;
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        closeAdminModal();
+      }
+    };
+    document.addEventListener("keydown", handleEsc);
+    document.body.classList.add("modal-lock");
+    return () => {
+      document.removeEventListener("keydown", handleEsc);
+      document.body.classList.remove("modal-lock");
+    };
+  }, [isAdminModalOpen]);
+
+  const closeAdminModal = () => {
+    setIsAdminModalOpen(false);
+    setAdminPassword("");
+    setAdminError("");
+    secretClickCountRef.current = 0;
+    if (secretClickTimerRef.current) {
+      window.clearTimeout(secretClickTimerRef.current);
+      secretClickTimerRef.current = null;
+    }
+  };
+
+  const handleLogoSecretClick = () => {
+    if (isAdminSessionActive()) {
+      router.push("/admin");
+      return;
+    }
+
+    secretClickCountRef.current += 1;
+    if (secretClickTimerRef.current) {
+      window.clearTimeout(secretClickTimerRef.current);
+    }
+    secretClickTimerRef.current = window.setTimeout(() => {
+      secretClickCountRef.current = 0;
+    }, 2500);
+
+    if (secretClickCountRef.current >= 5) {
+      secretClickCountRef.current = 0;
+      setIsAdminModalOpen(true);
+      setAdminError("");
+      setAdminPassword("");
+      if (secretClickTimerRef.current) {
+        window.clearTimeout(secretClickTimerRef.current);
+        secretClickTimerRef.current = null;
+      }
+    }
+  };
+
+  const handleAdminSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (isAdminSubmitting) return;
+    setIsAdminSubmitting(true);
+    setAdminError("");
+    try {
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ password: adminPassword }),
+      });
+      const data = (await response.json().catch(() => ({}))) as {
+        success?: boolean;
+        message?: string;
+        admin?: { name?: string; email?: string };
+      };
+      if (!response.ok || !data.success || !data.admin) {
+        setAdminError(data.message ?? "Incorrect password. Please try again.");
+        setIsAdminSubmitting(false);
+        return;
+      }
+      persistAdminSession(data.admin);
+      closeAdminModal();
+      setIsAdminSubmitting(false);
+      router.push("/admin");
+    } catch (error) {
+      console.error("Admin login failed", error);
+      setAdminError("Unable to verify right now. Please try again.");
+      setIsAdminSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     let lastY = typeof window !== "undefined" ? window.scrollY : 0;
@@ -101,7 +196,16 @@ export default function Navbar() {
     <>
       <header className={`navbar ${isNavHidden ? "navbar--hidden" : ""}`}>
         <div className="navbar__inner">
-        <div className="navbar__logo-block">
+        <div
+          className="navbar__logo-block"
+          onClick={handleLogoSecretClick}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleLogoSecretClick();
+          }}
+          aria-label="The Happy Safar logo"
+        >
           <Image
             src="/logo.png"
             alt="The Happy Safar logo"
@@ -154,7 +258,15 @@ export default function Navbar() {
             />
           </button>
           <div className="enquire-wrapper desktop-only">
-            <a href="#enquire">Enquire Now</a>
+            <button
+              type="button"
+              className="enquire-button"
+              onClick={() => {
+                window.dispatchEvent(new CustomEvent("open-enquiry"));
+              }}
+            >
+              Enquire Now
+            </button>
           </div>
         </div>
         </div>
@@ -165,9 +277,16 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          <a href="#enquire" className="mobile-enquire" onClick={() => setIsMenuOpen(false)}>
+          <button
+            type="button"
+            className="mobile-enquire"
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent("open-enquiry"));
+              setIsMenuOpen(false);
+            }}
+          >
             Enquire Now
-          </a>
+          </button>
         </div>
       </header>
 
@@ -176,6 +295,42 @@ export default function Navbar() {
         aria-hidden="true"
         onClick={() => setIsMenuOpen(false)}
       />
+
+      {isAdminModalOpen && (
+        <div className="admin-modal__backdrop" role="dialog" aria-modal="true">
+          <div className="admin-modal">
+            <header>
+              <p className="admin-modal__eyebrow">Restricted</p>
+              <h3>Admin Access</h3>
+              <p>Enter the admin password to continue.</p>
+            </header>
+            <form onSubmit={handleAdminSubmit}>
+              <label htmlFor="admin-password">Password</label>
+              <input
+                id="admin-password"
+                type="password"
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                autoFocus
+              />
+              {adminError && <p className="admin-modal__error">{adminError}</p>}
+              <div className="admin-modal__actions">
+                <button type="button" onClick={closeAdminModal} className="admin-modal__secondary">
+                  Cancel
+                </button>
+                <button type="submit" disabled={isAdminSubmitting} className="admin-modal__primary">
+                  {isAdminSubmitting ? "Verifying..." : "Unlock"}
+                </button>
+              </div>
+              {isAdminSessionActive() && (
+                <p className="admin-modal__hint">Session active. Unlocking will refresh access.</p>
+              )}
+            </form>
+          </div>
+        </div>
+      )}
 
       <style jsx>{`
         .navbar {
@@ -341,7 +496,7 @@ export default function Navbar() {
           border: 0;
         }
 
-        .enquire-wrapper a {
+        .enquire-wrapper :global(.enquire-button) {
           border-radius: 999px;
           border: 1px solid rgba(249, 115, 22, 0.45);
           background: linear-gradient(135deg, #fff2e2, #ffd7b2);
@@ -349,12 +504,13 @@ export default function Navbar() {
           font-size: 0.9rem;
           font-weight: 600;
           color: #8b3a0d;
-          text-decoration: none;
           box-shadow: 0 12px 25px rgba(139, 58, 13, 0.15);
           transition: transform 0.2s ease, background 0.2s ease;
+          border: none;
+          cursor: pointer;
         }
 
-        .enquire-wrapper a:hover {
+        .enquire-wrapper :global(.enquire-button:hover) {
           transform: translateY(-2px);
           background: linear-gradient(135deg, #ffc999, #ffb070);
         }
@@ -372,6 +528,126 @@ export default function Navbar() {
 
         .menu-toggle:hover {
           background: rgba(249, 115, 22, 0.08);
+        }
+
+        .admin-modal__backdrop {
+          position: fixed;
+          inset: 0;
+          background: rgba(15, 23, 42, 0.55);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 100;
+          padding: 1rem;
+        }
+
+        .admin-modal {
+          width: min(360px, 100%);
+          background: #fff8f2;
+          border-radius: 24px;
+          padding: 1.75rem;
+          box-shadow: 0 25px 60px rgba(15, 23, 42, 0.35);
+          border: 1px solid rgba(249, 115, 22, 0.15);
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+
+        .admin-modal header h3 {
+          margin-top: 0.2rem;
+          font-size: 1.35rem;
+          color: #0f172a;
+        }
+
+        .admin-modal header p {
+          margin: 0.3rem 0 0;
+          color: #475569;
+          font-size: 0.9rem;
+        }
+
+        .admin-modal__eyebrow {
+          text-transform: uppercase;
+          letter-spacing: 0.35em;
+          font-size: 0.7rem;
+          color: #f97316;
+          margin-bottom: 0.25rem;
+        }
+
+        .admin-modal form {
+          display: flex;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .admin-modal label {
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: #0f172a;
+        }
+
+        .admin-modal input {
+          border-radius: 16px;
+          border: 1px solid rgba(249, 115, 22, 0.35);
+          padding: 0.85rem 1rem;
+          font-size: 0.95rem;
+          outline: none;
+          background: #fff;
+          transition: border 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .admin-modal input:focus {
+          border-color: rgba(249, 115, 22, 0.75);
+          box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.15);
+        }
+
+        .admin-modal__error {
+          color: #dc2626;
+          font-size: 0.85rem;
+        }
+
+        .admin-modal__actions {
+          display: flex;
+          justify-content: flex-end;
+          gap: 0.75rem;
+          margin-top: 0.25rem;
+        }
+
+        .admin-modal__secondary,
+        .admin-modal__primary {
+          border-radius: 999px;
+          padding: 0.55rem 1.4rem;
+          font-weight: 600;
+          border: none;
+          cursor: pointer;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .admin-modal__secondary {
+          background: rgba(148, 163, 184, 0.2);
+          color: #475569;
+        }
+
+        .admin-modal__secondary:hover {
+          transform: translateY(-1px);
+        }
+
+        .admin-modal__primary {
+          background: linear-gradient(135deg, #ffbe98, #f97316);
+          color: #fff;
+          box-shadow: 0 12px 25px rgba(249, 115, 22, 0.35);
+        }
+
+        .admin-modal__primary:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          box-shadow: none;
+        }
+
+        .admin-modal__hint {
+          font-size: 0.75rem;
+          color: #0f172a;
+          opacity: 0.7;
+          text-align: right;
         }
 
         @media (max-width: 950px) {

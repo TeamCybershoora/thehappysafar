@@ -35,11 +35,11 @@ export default function WhyChooseUs() {
         <div className="header">
           <span>Why Choose Us?</span>
           <h2>
-            India-wide trips, choreographed <em>around you.</em>
+            Rajasthan trips, choreographed <em>around you.</em>
           </h2>
           <p>
-            We blend concierge-style planning with local intelligence so you can focus on soaking up forts, coasts,
-            backwaters, and mountain hospitality.
+            Jaipur-native planners sync palace stays, desert drives, leopard trails, and wellness rituals so you can focus
+            on soaking up pink-city bazaars, blue lanes, dune sunsets, and Aravalli calm.
           </p>
         </div>
 

@@ -25,11 +25,10 @@ export default function ContactSection() {
     <section id="contact" className="contact-wrap">
       <div className="contact-inner">
         <div className="contact-info">
-          <p className="eyebrow">Connect with Our Dedicated Support Team</p>
-          <h2>Your satisfaction stays our first priority.</h2>
+          <p className="eyebrow">Connect with Our Rajasthan Desk</p>
+          <h2>Jaipur HQ & on-ground pods across the state.</h2>
           <p className="hero-copy">
-            Live help for trip-planning, tweaks, or emergency support. Our India specialists are available every day to
-            ensure your itinerary stays seamless.
+            Live help for itinerary tweaks, leopard-trail updates, or dune-day surprises. Our Rajasthan specialists watch every leg so your desert stories stay seamless.
           </p>
 
           <div className="contact-list">

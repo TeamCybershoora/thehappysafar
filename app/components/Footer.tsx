@@ -14,11 +14,11 @@ const quickLinks = [
 ];
 
 const destinationLinks = [
-  "Golden Triangle Signature",
-  "Jaipur Jodhpur Jaisalmer",
-  "Goa Slow Travel",
-  "Kashmir Luxe Escape",
-  "Kerala Backwaters",
+  "Jaipur Heritage Trails",
+  "Jodhpur • Jaisalmer Dunes",
+  "Udaipur Lake Residencies",
+  "Shekhawati Fresco Loops",
+  "Jawai Leopard Safaris",
 ];
 
 const services: { label: string; value: string; icon: LucideIcon }[] = [
@@ -49,8 +49,8 @@ export default function Footer() {
             </div>
           </div>
           <p className="footer__brand-copy">
-            We craft India-wide packages covering stays, transport, and concierge support so your journeys feel safe,
-            soulful, and seamless.
+            We craft Rajasthan-first itineraries—palace stays, chauffeured drives, dune camps, and concierge support—so your desert
+            journeys stay soulful and seamless.
           </p>
         </div>
 

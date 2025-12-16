@@ -48,7 +48,7 @@ export default function FloatingNav() {
   };
 
   return (
-    <>
+    <div className="floating-nav">
       <div className="pointer-events-none fixed bottom-6 right-6 z-50 flex flex-col gap-3">
         <button
           aria-label="Chat on WhatsApp"
@@ -195,6 +195,6 @@ export default function FloatingNav() {
           }
         }
       `}</style>
-    </>
+    </div>
   );
 }

@@ -1,17 +1,48 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+
+const plannerProfiles = [
+  {
+    name: "Ananya Kapoor",
+    role: "Luxury desert journeys",
+    location: "Jaipur HQ",
+    focus: "Designs dune residencies with private hosts and surprise rituals.",
+    image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Devendra Rathore",
+    role: "Heritage circuits lead",
+    location: "Jodhpur pod",
+    focus: "Blends fort stays, blue-lane walks, and curated storyteller dinners.",
+    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Meera Saxena",
+    role: "Wellness retreats in Aravallis",
+    location: "Udaipur studio",
+    focus: "Maps spa rituals, lake palaces, and mindful culinary sessions.",
+    image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Raghav Singh",
+    role: "Leopard + safari expert",
+    location: "Jawai field desk",
+    focus: "Leads dawn tracking, shepherd lunches, and stargazing jeep suppers.",
+    image: "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=800&q=80",
+  },
+];
 
 const missionPoints = [
-  "Curate hyperlocal experiences with storytellers, naturalists, and artisans.",
-  "Handle every logistic in-house—from visas to vetted chauffeurs—so you stay carefree.",
-  "Design journeys that spotlight India’s contrasts: deserts, coasts, rainforests, and Himalayan wilds.",
+  "Curate hyperlocal experiences with palace historians, folk musicians, and desert naturalists.",
+  "Handle every logistic in-house—from luxury SUVs to vetted camel handlers—so you stay carefree.",
+  "Design journeys that spotlight Rajasthan’s contrasts: pink cities, blue lanes, Aravalli hills, and Thar dunes.",
 ];
 
 const stats = [
-  { label: "Trips planned", value: 1200, suffix: "+" },
-  { label: "Cities covered", value: 85 },
-  { label: "Partner stays", value: 140 },
+  { label: "Desert circuits", value: 520, suffix: "+" },
+  { label: "Heritage cities", value: 12 },
+  { label: "Partner palaces", value: 95 },
 ];
 
 function useCountUp(target: number, active: boolean, duration = 1400) {
@@ -67,6 +98,7 @@ function StatCard({
 export default function Highlights() {
   const sectionRef = useRef<HTMLElement | null>(null);
   const [isInView, setIsInView] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
     if (!sectionRef.current) return;
@@ -83,6 +115,19 @@ export default function Highlights() {
     return () => observer.disconnect();
   }, []);
 
+  const goToNext = useCallback(() => {
+    setActiveIndex((prev) => (prev + 1) % plannerProfiles.length);
+  }, []);
+
+  const goToPrev = useCallback(() => {
+    setActiveIndex((prev) => (prev - 1 + plannerProfiles.length) % plannerProfiles.length);
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(goToNext, 5000);
+    return () => clearInterval(timer);
+  }, [goToNext]);
+
   return (
     <section
       id="about"
@@ -94,13 +139,12 @@ export default function Highlights() {
           About The Happy Safar
         </p>
         <h2 className="text-3xl font-semibold text-zinc-900 md:text-4xl">
-          India-wide travel partners crafting soulful, custom itineraries.
+          Rajasthan travel partners crafting soulful, custom itineraries.
         </h2>
         <p className="text-base text-zinc-600">
-          We are a boutique travel studio headquartered in Jaipur with planners stationed across
-          India. From wellness-led retreats in the Nilgiris to palace residencies in Rajasthan, our
-          team obsesses over detail—matching you with local experts, unique stays, and seamless
-          transfers so every leg of the journey feels effortless.
+          We are a boutique travel studio rooted in Jaipur with fixers stationed across the state. From
+          Shekhawati fresco trails to Udaipur lake residencies, our team obsesses over detail—matching you
+          with local experts, heritage stays, and seamless transfers so every leg of the journey feels effortless.
         </p>
         <ul className="space-y-3 text-sm text-zinc-700">
           {missionPoints.map((point) => (
@@ -117,30 +161,101 @@ export default function Highlights() {
         </div>
       </div>
 
-      <div className="rounded-3xl border border-amber-100 bg-gradient-to-br from-white/90 via-white/70 to-amber-50/40 p-8 shadow-lg backdrop-blur">
-        <h3 className="text-xl font-semibold text-zinc-900">Meet your planners</h3>
-        <p className="mt-4 text-sm text-zinc-600">
-          Every itinerary is helmed by a dedicated travel lead plus a destination host on ground.
-          They coordinate surprise touches, track live weather, and adjust plans in real time so you
-          can simply show up.
-        </p>
-        <div className="mt-6 space-y-4">
-          {[
-            { name: "Ananya Kapoor", role: "Luxury desert journeys", location: "Jaipur HQ" },
-            { name: "Rishi Menon", role: "Coastal & islands lead", location: "Kochi studio" },
-            { name: "Meera Saxena", role: "Wellness & retreats", location: "Bangalore pod" },
-          ].map((member) => (
-            <div
-              key={member.name}
-              className="rounded-2xl border border-white/60 bg-white/70 p-4 shadow-sm backdrop-blur"
-            >
-              <p className="text-sm font-semibold text-zinc-900">{member.name}</p>
-              <p className="text-xs text-amber-600">{member.role}</p>
-              <p className="text-xs text-zinc-500">{member.location}</p>
-            </div>
-          ))}
-        </div>
+      <div className="planner-slider mt-6" aria-live="polite">
+        <p className="planner-slider__label">Meet your planners</p>
+        <article key={plannerProfiles[activeIndex].name} className="planner-slider__card">
+          <div className="planner-slider__image">
+            <img src={plannerProfiles[activeIndex].image} alt={plannerProfiles[activeIndex].name} loading="lazy" />
+          </div>
+          <div className="planner-slider__body">
+            <h4>{plannerProfiles[activeIndex].name}</h4>
+            <p className="planner-slider__summary">
+              {plannerProfiles[activeIndex].location} · {plannerProfiles[activeIndex].focus}
+            </p>
+          </div>
+        </article>
       </div>
+      <style jsx>{`
+        .planner-slider {
+          position: relative;
+          padding-bottom: 1rem;
+        }
+
+        .planner-slider__label {
+          font-size: 0.75rem;
+          letter-spacing: 0.35em;
+          text-transform: uppercase;
+          color: #f97316;
+          margin-bottom: 0.75rem;
+        }
+
+        .planner-slider__card {
+          max-width: 340px;
+          margin: 0 auto;
+          border-radius: 28px;
+          background: #fff;
+          border: 1px solid rgba(251, 191, 36, 0.35);
+          box-shadow: 0 16px 30px rgba(249, 115, 22, 0.18);
+          overflow: hidden;
+          animation: card-slide 0.6s ease;
+        }
+
+        .planner-slider__image {
+          height: 260px;
+          overflow: hidden;
+          position: relative;
+        }
+
+        .planner-slider__image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transform-origin: center;
+          transition: transform 0.6s ease;
+        }
+
+        .planner-slider__card:hover .planner-slider__image img {
+          transform: scale(1.05);
+        }
+
+        .planner-slider__image::after {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, rgba(255, 255, 255, 0) 80%, rgba(255, 255, 255, 5) 100%);
+          pointer-events: none;
+        }
+
+        .planner-slider__body {
+          padding: 1.25rem;
+          display: flex;
+          flex-direction: column;
+          gap: 0.5rem;
+        }
+
+        .planner-slider__body h4 {
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: #c2410c;
+        }
+
+        .planner-slider__summary {
+          font-size: 0.9rem;
+          color: #475569;
+          line-height: 1.5;
+        }
+
+        @keyframes card-slide {
+          from {
+            opacity: 0;
+            transform: translateX(40px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+      `}</style>
     </section>
   );
 }

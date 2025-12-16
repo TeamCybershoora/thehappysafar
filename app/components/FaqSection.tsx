@@ -5,26 +5,26 @@ import { ChevronDown, Clock3, Headphones, MapPin, ShieldCheck } from "lucide-rea
 
 const trustFeatures = [
   {
-    title: "GPS Tracked Vehicles",
-    description: "Travel safely in vehicles monitored with real-time GPS tracking.",
+    title: "GPS Tracked SUVs",
+    description: "Desert drives and city hops are monitored live for safety across Rajasthan.",
     icon: ShieldCheck,
     accent: { border: "#bbf7d0", background: "#f0fdf4" },
   },
   {
-    title: "Professional Drivers",
-    description: "Only licensed, experienced chauffeurs for a comfortable journey.",
+    title: "Heritage-Trained Drivers",
+    description: "Licensed chauffeurs who know every ghat, bazaar, and offbeat fort lane.",
     icon: MapPin,
     accent: { border: "#ddd6fe", background: "#f5f3ff" },
   },
   {
-    title: "Route-Friendly Drivers",
-    description: "Experts who know every detour, heritage lane, and scenic bypass.",
+    title: "Buffer-Friendly Itineraries",
+    description: "Routes are timed for palace traffic, sunset dunes, and leopard trails.",
     icon: Clock3,
     accent: { border: "#bae6fd", background: "#e0f2fe" },
   },
   {
-    title: "24x7 Call Support",
-    description: "Always-on assistance for itinerary tweaks or emergency help.",
+    title: "24x7 Desert Desk",
+    description: "On-ground planners in Jaipur and Jodhpur keep WhatsApp support always on.",
     icon: Headphones,
     accent: { border: "#bbf7d0", background: "#ecfdf5" },
   },
@@ -32,34 +32,34 @@ const trustFeatures = [
 
 const faqItems = [
   {
-    question: "What makes The Happy Safar’s India trips special?",
+    question: "What makes your Rajasthan trips special?",
     answer:
-      "Every itinerary is handcrafted around your crew—whether it’s Himalayan treks, coastal getaways, desert drives, or heritage circuits—so you travel with a private planner, vetted stays, and concierge support end to end.",
+      "Each itinerary blends palace stays, curated storytellers, and private chauffeurs. We handle every pass, permit, and surprise ritual so you explore worry-free.",
   },
   {
-    question: "When is the best time to explore India?",
+    question: "When is the best time to visit Rajasthan?",
     answer:
-      "October to March is perfect for most regions, but we design monsoon escapes in Kerala/Goa and summer retreats in the Himalayas or the North-East so you can travel year-round.",
+      "October to March gives crisp desert weather. For summer, we curate Aravalli wellness or lake-side residencies, and monsoon safaris in Jawai or Kumbhalgarh.",
   },
   {
-    question: "How do you handle transport between cities?",
+    question: "How do you manage transport across cities?",
     answer:
-      "We mix chauffeured SUVs, premium trains, and short-haul flights depending on distance. All vehicles are GPS tracked and driven by local experts who know the terrain.",
+      "We use vetted SUVs with GPS, premium trains between select hubs, and chartered dune transfers when needed—always tracked by our command desk.",
   },
   {
-    question: "Can you accommodate seniors or special requests?",
+    question: "Can you support seniors, kids, or special requests?",
     answer:
-      "Absolutely. We slow down day plans, secure wheelchair-friendly rooms, arrange medical-on-call, or add kids’ activities so every traveller feels looked after.",
+      "Yes. We add shorter drives, step-free suites, medical-on-call, kids’ treasure trails, or culinary sessions—whatever your crew needs.",
   },
   {
-    question: "Do you offer support during the trip?",
+    question: "Do I get help during the journey?",
     answer:
-      "Yes—our 24x7 command desk tracks every transfer, and your dedicated planner is a WhatsApp ping away for tweaks, emergencies, or extra experiences.",
+      "Absolutely. A planner plus on-ground host track every leg 24/7 for tweaks, delays, or extra experiences. Just ping us on WhatsApp.",
   },
   {
-    question: "How many days should I plan for an India circuit?",
+    question: "How many days do I need for Rajasthan circuits?",
     answer:
-      "Weekend hops start at 3–4 days, classic multi-city routes sit between 6–9 days, and immersive journeys (like Rajasthan + Goa or Kashmir + Ladakh) are 10–14 days.",
+      "Weekend Jaipur runs are 3–4 days, classic Jaipur–Jodhpur–Udaipur circuits sit at 6–8 days, and deep-dive desert + leopard trails span 9–12 days.",
   },
 ];
 
@@ -74,7 +74,7 @@ export default function FaqSection() {
           <div className="eyebrow-group">
             <p className="eyebrow">Trusted Solution</p>
             <h2>
-              Trusted solution for your <span>India-wide journeys</span>
+              Trusted solution for your <span>Rajasthan journeys</span>
             </h2>
           </div>
           <div className="trust-list">
@@ -104,7 +104,7 @@ export default function FaqSection() {
 
         <div className="faq-column">
           <p className="faq-eyebrow">Most popular FAQs</p>
-          <h3>FAQs for India travel planning</h3>
+          <h3>FAQs for Rajasthan travel planning</h3>
           <div className="faq-list">
             {faqItems.map((item, index) => {
               const isOpen = index === openIndex;

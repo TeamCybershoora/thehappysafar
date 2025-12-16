@@ -6,44 +6,44 @@ import { useEffect, useRef, useState } from "react";
 const serviceCards = [
   {
     id: "trusted",
-    title: "Trusted India Travel Services",
+    title: "Trusted Rajasthan Planners",
     description:
-      "Safe, reliable journeys led by seasoned planners who know the Himalayas, coasts, deserts, and metros inside out.",
+      "Jaipur-based fixers with on-ground pods across Jodhpur, Udaipur, Jaisalmer, and Shekhawati orchestrate every mile with vetted partners.",
     icon: ShieldCheck,
   },
   {
     id: "stay",
-    title: "Comfortable Accommodation",
+    title: "Heritage & Desert Stays",
     description:
-      "Curated stays—cosy havelis, heritage hotels, and boutique desert camps—with seamless check-ins.",
+      "Handpicked palace suites, frescoed havelis, boutique desert camps, and wellness retreats—each with seamless check-ins and private hosts.",
     icon: BedDouble,
   },
   {
     id: "guidance",
-    title: "Expert Tour Guidance",
+    title: "Local Storyteller Guides",
     description:
-      "Local hosts bring history, crafts, and cuisine alive through intimate storytelling and on-ground care.",
+      "Folk musicians, jeepers, historians, and camel whispers bring Marwar, Mewar, and Dhundhar alive with insider-only access and care.",
     icon: Compass,
   },
   {
     id: "custom",
-    title: "Customized Tour Packages",
+    title: "Custom Circuits & Rituals",
     description:
-      "Mix Goa beaches, Kerala backwaters, Ladakh passes or North-East forests—every itinerary bends to your travel style.",
+      "Mix pink-city shopping, Thar safaris, Aravalli wellness, and leopard trails—every itinerary bends to your travel tempo and rituals.",
     icon: Sparkles,
   },
 ];
 
 const heroImages = [
+  "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=700&q=80",
   "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=700&q=80",
-  "https://images.unsplash.com/photo-1505765050516-f72dcac9c60e?auto=format&fit=crop&w=700&q=80",
-  "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=700&q=80",
+  "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=700&q=80&sat=-25",
 ];
 
 const coverageStats = [
-  { value: 1200, suffix: "+", label: "Trips planned" },
-  { value: 85, suffix: "+", label: "Cities covered" },
-  { value: 140, suffix: "+", label: "Partner stays" },
+  { value: 850, suffix: "+", label: "Rajasthan trips" },
+  { value: 35, suffix: "+", label: "Signature circuits" },
+  { value: 120, suffix: "+", label: "Palace & desert stays" },
 ];
 
 function useCountUp(target: number, active: boolean, duration = 1200) {
@@ -124,10 +124,10 @@ export default function OurServices() {
               <span className="h-2 w-2 rounded-full bg-amber-500" aria-hidden />
               Our Services
             </div>
-            <h1 className="text-3xl font-semibold text-zinc-900 md:text-4xl">India-wide journeys with trusted care.</h1>
+            <h1 className="text-3xl font-semibold text-zinc-900 md:text-4xl">Rajasthan journeys with trusted care.</h1>
             <p className="text-base text-zinc-600">
-              We choreograph India from Kashmir to Kanyakumari—well-planned trips, reliable transport, comfortable stays,
-              and on-ground experts. Expect memorable, safe, and soulful explorations across every state.
+              We choreograph Rajasthan from Dhundhar to Marwar—palace residencies, chauffeured drives, camel trails, and
+              wellness retreats—all synced by planners who live here.
             </p>
           </div>
 
@@ -169,11 +169,11 @@ export default function OurServices() {
 
             <div className="relative flex h-full flex-col justify-between gap-6 p-6 text-left text-white">
               <div className="space-y-3">
-                <span className="inline-flex max-w-fit rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-[0.3em]">India coverage</span>
-                <h2 className="text-4xl font-semibold uppercase tracking-wider">Across India</h2>
+                <span className="inline-flex max-w-fit rounded-full bg-white/15 px-3 py-1 text-xs font-semibold tracking-[0.3em]">Rajasthan coverage</span>
+                <h2 className="text-4xl font-semibold uppercase tracking-wider">Across Rajasthan</h2>
                 <p className="max-w-sm text-sm text-white/90">
-                  From Rajasthan palaces to Kerala backwaters—our planners choreograph seamless routes,
-                  trusted stays, and on-ground expertise in every state.
+                  From Jaipur ateliers to Jawai leopard cliffs and the dunes of Khuri—our planners choreograph seamless
+                  routes, trusted stays, and on-ground expertise across the state.
                 </p>
                 <div className="grid gap-3 sm:grid-cols-3">
                   {coverageStats.map((stat) => (

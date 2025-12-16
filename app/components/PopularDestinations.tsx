@@ -7,9 +7,9 @@ interface PopularDestinationsProps {
 }
 
 export default function PopularDestinations({
-  eyebrow = "Popular Destinations",
-  title = "Explore top picks across India.",
-  description = "Dive into vibrant cities, serene backwaters, and majestic mountains. Hover and click to discover more.",
+  eyebrow = "Desert & Heritage Hotspots",
+  title = "Explore Rajasthan’s most storied circuits.",
+  description = "Glide through Jaipur bazaars, Jodhpur’s blue lanes, Udaipur ghats, and the Thar dunes. Hover to uncover signature stays and insider-only experiences.",
 }: PopularDestinationsProps) {
   return (
     <section className="mx-auto max-w-6xl px-6 py-12 text-left">

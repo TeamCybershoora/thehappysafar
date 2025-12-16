@@ -48,7 +48,36 @@ export const curatedPackages: PackageDetails[] = [
       "Chef’s table with live music",
     ],
   },
-  
+  {
+    id: "marwar-legends",
+    title: "Marwar Legends & Dune Camp",
+    duration: "5N/6D",
+    priceTag: "From ₹68,000",
+    image:
+      "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1200&q=80",
+    summary: "Jodhpur → Mehrangarh → Osian → Jaisalmer dune camp",
+    itinerary: [
+      "Blue city heritage walk with historian",
+      "Sunset zipline at Mehrangarh",
+      "Private camel safari & folk recital",
+      "Luxury dune glamping & stargazing supper",
+    ],
+  },
+  {
+    id: "shekhawati-heritage",
+    title: "Shekhawati Frescoes & Boutique Havelis",
+    duration: "3N/4D",
+    priceTag: "From ₹44,000",
+    image:
+      "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?auto=format&fit=crop&w=1200&q=80",
+    summary: "Mandawa → Nawalgarh → Alsisar desert break",
+    itinerary: [
+      "Guided fresco trail with art conservator",
+      "Mud & mirror craft workshop",
+      "Rural cycling to stepwell",
+      "Poolside dinner with folk trio",
+    ],
+  },
 ];
 
 export const extendedPackages: PackageDetails[] = Array.from({ length: 50 }, (_, index) => {

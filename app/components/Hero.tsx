@@ -1,19 +1,71 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CurvedLoop from "../components/CurvedLoop";
 
-const HERO_BG =
-  "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1600&q=80";
+const HERO_BACKGROUNDS = [
+  "./images/1.jpg",
+  "./images/2.jpg",
+  "./images/3.jpg",
+  "./images/4.jpg",
+  "./images/5.jpg",
+];
 
 const highlights = ["Schedule", "Wishlist", "About"];
 
 export default function Hero() {
   const [isEnquireOpen, setEnquireOpen] = useState(false);
+  const [activeBgIndex, setActiveBgIndex] = useState(0);
+  const [slideshowReady, setSlideshowReady] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setEnquireOpen(true);
+    window.addEventListener("open-enquiry", handler as EventListener);
+    return () => window.removeEventListener("open-enquiry", handler as EventListener);
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const preloaders = HERO_BACKGROUNDS.map(
+      (src) =>
+        new Promise<void>((resolve) => {
+          const img = new Image();
+          img.onload = () => resolve();
+          img.onerror = () => resolve();
+          img.src = src;
+        })
+    );
+
+    Promise.all(preloaders).then(() => {
+      if (!cancelled) {
+        setSlideshowReady(true);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!slideshowReady || HERO_BACKGROUNDS.length <= 1) return undefined;
+    const interval = window.setInterval(() => {
+      setActiveBgIndex((prev) => (prev + 1) % HERO_BACKGROUNDS.length);
+    }, 2000);
+    return () => window.clearInterval(interval);
+  }, [slideshowReady]);
 
   return (
     <section className="hero-nz" aria-labelledby="hero-nz-title">
-      <div className="hero-nz__bg" />
+      <div className="hero-nz__bg-stack" aria-hidden="true">
+        {HERO_BACKGROUNDS.map((imageUrl, index) => (
+          <div
+            key={imageUrl}
+            className={`hero-nz__bg-layer${index === activeBgIndex ? " hero-nz__bg-layer--active" : ""}`}
+            style={{ backgroundImage: `url(${imageUrl})` }}
+          />
+        ))}
+      </div>
       <div className="hero-nz__overlay" />
       <div className="hero-nz__fade" aria-hidden="true" />
 
@@ -23,7 +75,7 @@ export default function Hero() {
           <span>Tailor every escape with The Happy Safar</span>
 
           <div className="hero-nz__search" role="search">
-            <input type="text" placeholder="Search Indian journeys" aria-label="Search Indian journeys" />
+            <input type="text" placeholder="Search Rajasthan journeys" aria-label="Search Rajasthan journeys" />
             <button type="button">Search</button>
           </div>
         </div>
@@ -33,14 +85,14 @@ export default function Hero() {
             <div className="hero-nz__heading-block">
               <p className="hero-nz__eyebrow">The Happy Safar</p>
               <h1 id="hero-nz-title">
-                <span>India</span> Awaits You
+                <span>Rajasthan</span> Awaits You
               </h1>
             </div>
             <div className="hero-nz__desc-grid">
               <p>
-                From Ladakh’s moonlike passes to Kerala’s backwaters, The Happy Safar choreographs
-                journeys that feel handcrafted, heartfelt, and full of India’s soul. We obsess over
-                every rail ride, palace stay, and street-food crawl so you can just immerse yourself.
+                From Jaipur’s pink boulevards to the dunes of Jaisalmer and the blue lanes of Jodhpur, The Happy Safar
+                scripts soulful Rajasthan stories. We obsess over palace stays, chauffeured drives, and local hosts so
+                every leg of your desert escape feels effortless.
               </p>
             </div>
 
@@ -48,7 +100,7 @@ export default function Hero() {
               <a className="hero-nz__cta-primary" href="#get-started">
                 Plan with THS
               </a>
-              <a className="hero-nz__cta-ghost" href="#itinerary">
+              <a className="hero-nz__cta-ghost" href="#packages">
                 See sample routes
               </a>
             </div>
@@ -60,16 +112,16 @@ export default function Hero() {
               <button type="button" onClick={() => setEnquireOpen(true)}>
                 Enquire Now
               </button>
-              <span>Talk to a planner in under 10 minutes.</span>
+              <span>Talk to a Rajasthan planner in under 10 minutes.</span>
             </div>
-            <div className="hero-nz__rail" aria-label="Quick actions">
+            {/* <div className="hero-nz__rail" aria-label="Quick actions">
               <span className="hero-nz__rail-label">Plan & Go</span>
               {highlights.map((item) => (
                 <button key={item} type="button">
                   {item}
                 </button>
               ))}
-            </div>
+            </div> */}
              
           </div>
           
@@ -83,7 +135,7 @@ export default function Hero() {
                 ×
               </button>
               <p className="hero-nz__modal-eyebrow">Talk to The Happy Safar</p>
-              <h2 id="enquire-heading">Plan your India escape</h2>
+              <h2 id="enquire-heading">Plan your Rajasthan escape</h2>
               <form className="hero-nz__modal-form">
                 <input type="text" placeholder="Your name" required />
                 <input type="tel" placeholder="Mobile number" required />
@@ -106,7 +158,7 @@ export default function Hero() {
             </div>
           </div>
         )}
-         <CurvedLoop marqueeText="The Happy Safar ✦ Across India ✦ Custom Trips ✦" speed={7} curveAmount={200} />
+         <CurvedLoop marqueeText="The Happy Safar ✦ Across Rajasthan ✦ Custom Desert Trails ✦" speed={7} curveAmount={200} />
       </div>
 
       <style jsx>{`
@@ -126,18 +178,28 @@ export default function Hero() {
           position: absolute;
           inset: auto 0 0 0;
           height: 160px;
-          background: linear-gradient(180deg, rgba(9, 9, 11, 0) 0%, rgba(5, 5, 6, 0.85) 65%, #050506 100%);
+          background: linear-gradient(180deg, rgba(255, 251, 235, 0) 60%, rgba(255, 251, 235, 0.85) 87%, #FFFBEB 100%);
           pointer-events: none;
           z-index: 0;
         }
 
-        .hero-nz__bg {
+        .hero-nz__bg-stack {
           position: absolute;
           inset: 0;
-          background-image: url(${HERO_BG});
+          overflow: hidden;
+        }
+        .hero-nz__bg-layer {
+          position: absolute;
+          inset: 0;
           background-size: cover;
           background-position: center;
           filter: saturate(1.05);
+          opacity: 0;
+          transition: opacity 0.9s ease-in-out;
+          will-change: opacity;
+        }
+        .hero-nz__bg-layer--active {
+          opacity: 1;
         }
 
         .hero-nz__overlay {
