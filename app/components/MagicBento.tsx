@@ -37,51 +37,51 @@ const MOBILE_BREAKPOINT = 768;
 const fallbackCards: BentoCardProps[] = [
   {
     color: "#ffffff",
-    title: "Jaipur",
-    description: "Amber Fort • Hawa Mahal • City Palace",
+    // title: "Jaipur",
+    // description: "Amber Fort • Hawa Mahal • City Palace",
     label: "Rajasthan",
     image:
-      "./images/udaipur.jpeg",
+      "./images/img3.jpeg",
   },
   {
     color: "#ffffff",
-    title: "Udaipur",
-    description: "Lake Pichola • City Palace • Fateh Sagar",
+    // title: "Udaipur",
+    // description: "Lake Pichola • City Palace • Fateh Sagar",
     label: "Mewar",
     image:
-      "./images/udaipur.jpeg",
+      "./images/1.jpg",
   },
   {
     color: "#ffffff",
-    title: "Kashmir",
-    description: "Gulmarg • Dal Lake • Pahalgam",
-    label: "Himalayas",
+    // title: "Jodhpur",
+    // description: "Mehrangarh Fort • Blue City alleys • Stepwells",
+    label: "Marwar",
     image:
-      "./images/udaipur.jpeg",
+      "./images/2.jpg",
   },
   {
     color: "#ffffff",
-    title: "Goa",
-    description: "Fontainhas • Assagao • Sunset Beaches",
-    label: "Konkan",
+    // title: "Jaisalmer",
+    // description: "Sonar Quila • Sam Sand Dunes • Desert camps",
+    label: "Thar Desert",
     image:
-      "./images/udaipur.jpeg",
+      "./images/3.jpg",
   },
   {
     color: "#ffffff",
-    title: "Rann of Kutch",
-    description: "White Desert • Hodka • Bhuj",
-    label: "Gujarat",
+    // title: "Ranthambore",
+    // description: "Tiger safaris • Ganesh Temple • Jungle lodges",
+    label: "Sawai Madhopur",
     image:
-      "./images/udaipur.jpeg",
+      "./images/4.jpg",
   },
   {
     color: "#ffffff",
-    title: "Kerala Backwaters",
-    description: "Alleppey • Kumarakom • Houseboats",
-    label: "Kerala",
+    // title: "Pushkar",
+    // description: "Sacred lake • Brahma Temple • Camel fair",
+    label: "Ajmer",
     image:
-      "./images/udaipur.jpeg",
+      "./images/5.jpg",
   },
 ];
 
