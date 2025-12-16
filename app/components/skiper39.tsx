@@ -351,7 +351,7 @@ const Skiper39 = () => {
         Thanks for Visiting
       </div>
        <div className="pt-31">
-         <CurvedLoop marqueeText="The Happy Safar ✦ Across India ✦ Custom Trips ✦" speed={7} curveAmount={-200} />
+         <CurvedLoop marqueeText="The Happy Safar ✦ Across Rajasthan ✦ Custom Desert Trails ✦" speed={7} curveAmount={-200} />
        </div>
       <CrowdCanvas rows={15} cols={7} />
     </div>
