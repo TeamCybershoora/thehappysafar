@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MessageCircle, MoveRight, X } from "lucide-react";
+import { MoveRight, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { PackageDetails } from "@/types/packages";
 
@@ -20,14 +20,14 @@ export default function PackageCard({
     itinerary,
     summary,
     ctaLink = "/#enquiry",
-    whatsappLink = "https://wa.me/917426933288",
   } = details;
 
-  const [showModal, setShowModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showEnquiryModal, setShowEnquiryModal] = useState(false);
 
   useEffect(() => {
     const html = document.documentElement;
-    if (showModal) {
+    if (showDetailsModal || showEnquiryModal) {
       document.body.classList.add("modal-lock");
       html.classList.add("modal-lock");
     } else {
@@ -38,7 +38,7 @@ export default function PackageCard({
       document.body.classList.remove("modal-lock");
       html.classList.remove("modal-lock");
     };
-  }, [showModal]);
+  }, [showDetailsModal, showEnquiryModal]);
 
   return (
     <>
@@ -74,34 +74,120 @@ export default function PackageCard({
             </div>
           </div>
 
-          <div className="mt-auto grid gap-3 sm:grid-cols-2">
+          <div className="mt-auto flex flex-col gap-3 sm:flex-row">
             <button
               type="button"
-              onClick={() => setShowModal(true)}
-              className="flex items-center justify-center gap-2 rounded-full bg-[#8a410d] px-4 py-2 text-sm font-semibold text-white shadow hover:bg-[#7a360b]"
+              onClick={() => setShowDetailsModal(true)}
+              className="flex flex-1 items-center justify-center gap-2 rounded-full border border-[#8a410d] px-4 py-2 text-sm font-semibold text-[#8a410d] shadow-sm transition hover:bg-[#fef4ec]"
+            >
+              See details
+              <MoveRight className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowEnquiryModal(true)}
+              className="flex flex-1 items-center justify-center gap-2 rounded-full bg-[#8a410d] px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-[#7a360b]"
             >
               Enquire Now
               <MoveRight className="h-4 w-4" />
             </button>
-            <a
-              href={whatsappLink}
-              target="_blank"
-              rel="noreferrer"
-              className="flex items-center justify-center gap-2 rounded-full border border-emerald-500 bg-emerald-50 px-4 py-2 text-sm font-semibold text-emerald-700 shadow-sm hover:bg-emerald-100"
-            >
-              <MessageCircle className="h-4 w-4" />
-              WhatsApp
-            </a>
           </div>
         </div>
       </article>
 
-      {showModal && (
+      {showDetailsModal && (
         <div
           className="fixed inset-0 z-100 flex items-center justify-center overflow-y-auto bg-black/50 backdrop-blur-sm px-4 py-10 sm:py-16"
           onWheelCapture={(e) => e.stopPropagation()}
           onWheel={(e) => e.stopPropagation()}
-          onClick={() => setShowModal(false)}
+          onClick={() => setShowDetailsModal(false)}
+        >
+          <div
+            className="w-full max-w-4xl overflow-hidden rounded-3xl bg-white shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="grid gap-0 md:grid-cols-[1fr_1.15fr]">
+              <div className="hidden md:block">
+                <img src={image} alt={title} className="h-full w-full object-cover" loading="lazy" />
+              </div>
+              <div className="modal-scroll flex flex-col gap-6 p-6 sm:p-8">
+                <div className="flex items-start justify-between gap-4 border-b border-zinc-100 pb-5">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.4em] text-amber-600">Tour details</p>
+                    <h3 className="text-2xl font-semibold text-zinc-900">{title}</h3>
+                    <p className="text-sm text-zinc-500">
+                      {duration} • {priceTag}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    className="rounded-full border border-zinc-200 p-1 text-zinc-500 transition hover:bg-zinc-50"
+                    aria-label="Close details"
+                    onClick={() => setShowDetailsModal(false)}
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
+
+                <section className="space-y-3 text-sm text-zinc-600">
+                  <h4 className="text-sm font-semibold uppercase tracking-[0.35em] text-amber-700">Overview</h4>
+                  <p className="leading-6 text-zinc-600">{summary}</p>
+                </section>
+
+                <section className="space-y-4">
+                  <div className="flex items-center gap-2 text-amber-700">
+                    <span className="text-base">🗺️</span>
+                    <h4 className="text-sm font-semibold uppercase tracking-[0.35em]">Itinerary</h4>
+                  </div>
+                  <div className="space-y-3">
+                    {itinerary.map((stop, index) => (
+                      <article key={`${stop}-detail`} className="day-card">
+                        <header className="day-card__header">
+                          <div>
+                            <p className="day-card__day">Day {index + 1}</p>
+                            <p className="day-card__tag">Rajasthan circuit</p>
+                          </div>
+                        </header>
+                        <p className="day-card__body">{stop}</p>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+
+                <div className="mt-2 flex flex-col gap-3 border-t border-zinc-100 pt-5 sm:flex-row">
+                  <button
+                    type="button"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-full bg-[#8a410d] px-5 py-3 text-sm font-semibold text-white shadow hover:bg-[#7a360b]"
+                    onClick={() => {
+                      setShowDetailsModal(false);
+                      setShowEnquiryModal(true);
+                    }}
+                  >
+                    Enquire about this
+                    <MoveRight className="h-4 w-4" />
+                  </button>
+                  <a
+                    href={ctaLink}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-full border border-zinc-200 px-5 py-3 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-50"
+                  >
+                    Download brochure
+                    <MoveRight className="h-4 w-4" />
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showEnquiryModal && (
+        <div
+          className="fixed inset-0 z-100 flex items-center justify-center overflow-y-auto bg-black/50 backdrop-blur-sm px-4 py-10 sm:py-16"
+          onWheelCapture={(e) => e.stopPropagation()}
+          onWheel={(e) => e.stopPropagation()}
+          onClick={() => setShowEnquiryModal(false)}
         >
           <div
             className="w-full max-w-md overflow-hidden rounded-2xl bg-white p-5 shadow-2xl sm:p-6"
@@ -120,7 +206,7 @@ export default function PackageCard({
                   type="button"
                   className="rounded-full border border-zinc-200 p-1 text-zinc-500 transition hover:bg-zinc-50"
                   aria-label="Close enquiry form"
-                  onClick={() => setShowModal(false)}
+                  onClick={() => setShowEnquiryModal(false)}
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -200,7 +286,7 @@ export default function PackageCard({
                 <button
                   type="button"
                   className="flex flex-1 items-center justify-center gap-2 rounded-full border border-zinc-200 px-5 py-3 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-50"
-                  onClick={() => setShowModal(false)}
+                  onClick={() => setShowEnquiryModal(false)}
                 >
                   Cancel
                 </button>
