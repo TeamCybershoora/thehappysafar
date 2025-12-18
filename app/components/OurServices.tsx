@@ -100,6 +100,10 @@ export default function OurServices() {
   const statsRef = useRef<HTMLDivElement | null>(null);
   const [statsInView, setStatsInView] = useState(false);
 
+  const handleOpenEnquiry = () => {
+    window.dispatchEvent(new CustomEvent("open-enquiry"));
+  };
+
   useEffect(() => {
     if (!statsRef.current) return;
     const observer = new IntersectionObserver(
@@ -150,7 +154,11 @@ export default function OurServices() {
           </div>
 
           <div className="flex flex-wrap items-center gap-4">
-            <button className="inline-flex items-center rounded-full bg-[#8a410d] px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-lg shadow-amber-200 transition hover:bg-[#75360b]">
+            <button
+              type="button"
+              onClick={handleOpenEnquiry}
+              className="inline-flex items-center rounded-full bg-[#8a410d] px-6 py-3 text-sm font-semibold uppercase tracking-wide text-white shadow-lg shadow-amber-200 transition hover:bg-[#75360b]"
+            >
               Book Now
             </button>
             <div className="text-sm text-zinc-500">
@@ -190,7 +198,11 @@ export default function OurServices() {
                     </div>
                   ))}
                 </div>
-                <button className="rounded-full bg-white px-4 py-2 text-sm font-semibold uppercase tracking-wide text-[#0d47a1] shadow">
+                <button
+                  type="button"
+                  onClick={handleOpenEnquiry}
+                  className="rounded-full bg-white px-4 py-2 text-sm font-semibold uppercase tracking-wide text-[#0d47a1] shadow"
+                >
                   Book Now
                 </button>
               </div>
