@@ -63,6 +63,9 @@ export default function PackageCard({
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [showEnquiryModal, setShowEnquiryModal] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitState, setSubmitState] = useState<"idle" | "success" | "error">("idle");
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const headlineTags = useMemo(() => {
     return itinerary
@@ -185,11 +188,20 @@ export default function PackageCard({
     };
   }, [showDetailsModal, showEnquiryModal]);
 
+  useEffect(() => {
+    if (!showEnquiryModal) {
+      setIsSubmitting(false);
+      setSubmitState("idle");
+      setSubmitError(null);
+    }
+  }, [showEnquiryModal]);
+
   return (
     <>
       <article
+        data-package-id={details.id}
         className={cn(
-          "flex flex-col overflow-hidden rounded-3xl border border-amber-100 bg-white shadow-xl transition hover:-translate-y-1 hover:shadow-2xl",
+          "package-card flex flex-col overflow-hidden rounded-3xl border border-amber-100 bg-white shadow-xl transition hover:-translate-y-1 hover:shadow-2xl",
           className
         )}
       >
@@ -429,77 +441,143 @@ export default function PackageCard({
                 </ul>
               </div>
 
-              <form className="space-y-4">
-              <label className="flex flex-col gap-2">
-                <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Selected package</span>
-                <input
-                  readOnly
-                  value={title}
-                  className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm font-semibold text-zinc-800"
-                />
-              </label>
+              {submitState === "success" ? (
+                <div className="enquiry-success">
+                  <div className="enquiry-success__icon">✓</div>
+                  <h4>Thanks for your enquiry!</h4>
+                  <p>We will reach out soon to craft your itinerary.</p>
+                  <button
+                    type="button"
+                    className="enquiry-success__action"
+                    onClick={() => {
+                      setSubmitState("idle");
+                      setSubmitError(null);
+                    }}
+                  >
+                    Add More Enquiry
+                  </button>
+                </div>
+              ) : (
+                <form
+                  className="space-y-4"
+                  onSubmit={async (event) => {
+                    event.preventDefault();
+                    if (isSubmitting) return;
+                    setIsSubmitting(true);
+                    setSubmitState("idle");
+                    setSubmitError(null);
 
-              <label className="flex flex-col gap-2">
-                <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Your name</span>
-                <input
-                  type="text"
-                  name="name"
-                  required
-                  placeholder="Saira Sharma"
-                  className="rounded-2xl border border-zinc-200 px-4 py-3 text-sm outline-none transition focus:border-amber-500"
-                />
-              </label>
+                    const form = event.currentTarget;
+                    const formData = new FormData(form);
 
-              <div className="grid gap-4 md:grid-cols-2">
-                <label className="flex flex-col gap-2">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Email</span>
-                  <input
-                    type="email"
-                    name="email"
-                    required
-                    placeholder="you@email.com"
-                    className="rounded-2xl border border-zinc-200 px-4 py-3 text-sm outline-none transition focus:border-amber-500"
-                  />
-                </label>
-                <label className="flex flex-col gap-2">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Mobile</span>
-                  <input
-                    type="tel"
-                    name="phone"
-                    required
-                    placeholder="+91 98765 43210"
-                    className="rounded-2xl border border-zinc-200 px-4 py-3 text-sm outline-none transition focus:border-amber-500"
-                  />
-                </label>
-              </div>
+                    const payload = {
+                      name: String(formData.get("name") ?? "").trim(),
+                      email: String(formData.get("email") ?? "").trim(),
+                      phone: String(formData.get("phone") ?? "").trim() || undefined,
+                      message: String(formData.get("message") ?? "").trim(),
+                      selectedPackage: title,
+                      source: "package-card",
+                    };
 
-              <label className="flex flex-col gap-2">
-                <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Query / customisation notes</span>
-                <textarea
-                  name="message"
-                  required
-                  rows={4}
-                  placeholder="Share your dates, headcount, preferences..."
-                  className="rounded-2xl border border-zinc-200 px-4 py-3 text-sm outline-none transition focus:border-amber-500"
-                />
-              </label>
+                    try {
+                      const response = await fetch("/api/enquiry", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(payload),
+                      });
 
-              <div className="flex flex-col gap-3 sm:flex-row">
-                <button
-                  type="submit"
-                  className="flex flex-1 items-center justify-center gap-2 rounded-full bg-[#8a410d] px-5 py-3 text-sm font-semibold text-white shadow hover:bg-[#7a360b]"
+                      if (!response.ok) {
+                        throw new Error("Failed to submit enquiry");
+                      }
+
+                      setSubmitState("success");
+                      form.reset();
+                    } catch (error) {
+                      console.error("Enquiry submission failed", error);
+                      setSubmitState("error");
+                      setSubmitError("Unable to send enquiry right now. Please try again or call us.");
+                    } finally {
+                      setIsSubmitting(false);
+                    }
+                  }}
                 >
-                  Send enquiry
-                </button>
-                <button
-                  type="button"
-                  className="flex flex-1 items-center justify-center gap-2 rounded-full border border-zinc-200 px-5 py-3 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-50"
-                  onClick={() => setShowEnquiryModal(false)}
-                >
-                  Cancel
-                </button>
-              </div>
-              </form>
+                  <label className="flex flex-col gap-2">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Selected package</span>
+                    <input
+                      readOnly
+                      value={title}
+                      className="rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 text-sm font-semibold text-zinc-800"
+                    />
+                  </label>
+
+                  <label className="flex flex-col gap-2">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Your name</span>
+                    <input
+                      type="text"
+                      name="name"
+                      required
+                      placeholder="Saira Sharma"
+                      className="rounded-2xl border border-zinc-200 px-4 py-3 text-sm outline-none transition focus:border-amber-500"
+                    />
+                  </label>
+
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <label className="flex flex-col gap-2">
+                      <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Email</span>
+                      <input
+                        type="email"
+                        name="email"
+                        required
+                        placeholder="you@email.com"
+                        className="rounded-2xl border border-zinc-200 px-4 py-3 text-sm outline-none transition focus:border-amber-500"
+                      />
+                    </label>
+                    <label className="flex flex-col gap-2">
+                      <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Mobile</span>
+                      <input
+                        type="tel"
+                        name="phone"
+                        required
+                        placeholder="+91 98765 43210"
+                        className="rounded-2xl border border-zinc-200 px-4 py-3 text-sm outline-none transition focus:border-amber-500"
+                      />
+                    </label>
+                  </div>
+
+                  <label className="flex flex-col gap-2">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-zinc-500">Query / customisation notes</span>
+                    <textarea
+                      name="message"
+                      required
+                      rows={4}
+                      placeholder="Share your dates, headcount, preferences..."
+                      className="rounded-2xl border border-zinc-200 px-4 py-3 text-sm outline-none transition focus:border-amber-500"
+                    />
+                  </label>
+
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    <div className="space-y-2 flex-1">
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="flex w-full items-center justify-center gap-2 rounded-full bg-[#8a410d] px-5 py-3 text-sm font-semibold text-white shadow transition hover:bg-[#7a360b] disabled:cursor-not-allowed disabled:opacity-70"
+                      >
+                        {isSubmitting ? "Sending..." : "Send enquiry"}
+                      </button>
+                      {submitState === "error" && submitError && (
+                        <p className="text-center text-xs text-amber-700">{submitError}</p>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      className="flex flex-1 items-center justify-center gap-2 rounded-full border border-zinc-200 px-5 py-3 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-50"
+                      onClick={() => setShowEnquiryModal(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              )}
             </div>
           </div>
         </div>
@@ -599,6 +677,24 @@ export default function PackageCard({
           cursor: not-allowed;
           transform: none;
           box-shadow: -2px 2px 0 #facc15;
+        }
+
+        :global(.package-card--highlight) {
+          outline: 3px solid rgba(217, 119, 6, 0.45);
+          outline-offset: 4px;
+          animation: package-card-glow 1.8s ease;
+        }
+
+        @keyframes package-card-glow {
+          0% {
+            box-shadow: 0 0 0 rgba(245, 158, 11, 0);
+          }
+          40% {
+            box-shadow: 0 28px 60px rgba(245, 158, 11, 0.25);
+          }
+          100% {
+            box-shadow: 0 16px 40px rgba(244, 169, 80, 0.08);
+          }
         }
       `}</style>
     </>
