@@ -23,6 +23,8 @@ const detailPageMap: Record<string, string> = {
   "PACKAGE 08": "/package8",
 };
 
+const buildDetailPath = (rawId: string) => `/packages/${encodeURIComponent(normalizeId(rawId))}`;
+
 const parseItineraryStep = (step: string) => {
   const normalized = step.replace(/\r\n/g, "\n");
   const delimiters = ["::", "|", "—", " - "] as const;
@@ -82,7 +84,10 @@ export default function PackageCard({
   const [submitState, setSubmitState] = useState<"idle" | "success" | "error">("idle");
   const [submitError, setSubmitError] = useState<string | null>(null);
   const router = useRouter();
-  const detailPath = detailPageMap[normalizeId(details.id)] ?? null;
+  const normalizedId = normalizeId(details.id);
+  const normalizedBaseId = normalizedId.replace(/-\d+$/, "");
+  const detailPath =
+    detailPageMap[normalizedId] ?? detailPageMap[normalizedBaseId] ?? buildDetailPath(details.id);
 
   const headlineTags = useMemo(() => {
     return itinerary

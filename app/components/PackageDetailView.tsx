@@ -654,11 +654,11 @@ export default function PackageDetailView({ packageId }: { packageId: string }) 
                       {showRouteMap ? "Hide map" : "View map"}
                     </button>
                   </div>
-                  {(showRouteMap || typeof window !== "undefined") && (
-                    <div className={`overflow-hidden rounded-xl border border-amber-100 ${showRouteMap ? "" : "hidden md:block"}`}>
-                      <RouteMap points={routePoints} />
+                  {showRouteMap ? (
+                    <div className="overflow-hidden rounded-xl border border-amber-100">
+                      <RouteMap key="visible" points={routePoints} />
                     </div>
-                  )}
+                  ) : null}
                 </div>
               )}
             </div>
