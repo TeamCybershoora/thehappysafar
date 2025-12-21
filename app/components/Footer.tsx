@@ -7,10 +7,10 @@ import { Mail, MapPin, Phone, MessageCircle } from "lucide-react";
 
 const quickLinks = [
   { label: "Home", href: "/" },
-  { label: "About Us", href: "#about" },
-  { label: "Packages", href: "#packages" },
-  { label: "Popular Destinations", href: "#popular" },
-  { label: "Contact", href: "#contact" },
+  { label: "About Us", href: "./about" },
+  { label: "Packages", href: "./packages" },
+  { label: "Popular Destinations", href: "/packages" },
+  { label: "Contact", href: "./contact" },
 ];
 
 const destinationLinks = [

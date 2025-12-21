@@ -64,6 +64,8 @@ type EnquiryPayload = {
   source?: string;
 };
 
+const CONCIERGE_NUMBER = "+919251147383";
+
 const transporter = (() => {
   try {
     assertEnv();
@@ -123,9 +125,20 @@ export async function POST(request: NextRequest) {
 
   const { name, email, phone, message, selectedPackage, source } = payload;
   const messageHtml = message.replace(/\n/g, "<br/>");
+  const sanitizedPhoneHref = phone ? phone.replace(/[^+\d]/g, "") : null;
 
-  const toAddress =
-    process.env.TO_EMAIL || process.env.EMAIL_TO || (process.env.SMTP_USER || process.env.EMAIL_USER || "thehappysafar@gmail.com");
+  const configuredRecipient = process.env.TO_EMAIL || process.env.EMAIL_TO;
+  const fallbackRecipient = "thehappysafar@gmail.com";
+  const transportUser = process.env.SMTP_USER || process.env.EMAIL_USER;
+
+  const adminRecipients = [configuredRecipient, transportUser, fallbackRecipient]
+    .filter((value): value is string => Boolean(value))
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  const uniqueAdminRecipients = Array.from(new Set(adminRecipients));
+
+  const toAddress = uniqueAdminRecipients.length > 0 ? uniqueAdminRecipients : [fallbackRecipient];
   const fromAddress = (process.env.FROM_EMAIL || process.env.SMTP_USER || process.env.EMAIL_USER) as string;
   const fromName = process.env.FROM_NAME || process.env.EMAIL_FROM_NAME || "The Happy Safar";
 
@@ -193,7 +206,7 @@ export async function POST(request: NextRequest) {
                       </td>
                       <td style="width:16px;">&nbsp;</td>
                       <td>
-                        <a href="tel:+917426933288" style="display:inline-block;padding:12px 24px;border-radius:999px;border:1px solid rgba(15,23,42,0.2);color:#0f172a;font-weight:600;font-size:13px;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;">Call concierge</a>
+                        <a href="${sanitizedPhoneHref ? `tel:${sanitizedPhoneHref}` : `tel:${CONCIERGE_NUMBER}`}" style="display:inline-block;padding:12px 24px;border-radius:999px;border:1px solid rgba(15,23,42,0.2);color:#0f172a;font-weight:600;font-size:13px;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;">${sanitizedPhoneHref ? "Call customer" : "Call concierge"}</a>
                       </td>
                     </tr>
                   </table>
@@ -281,7 +294,7 @@ ${message.trim()}
                           <table role="presentation" cellpadding="0" cellspacing="0">
                             <tr>
                               <td>
-                                <a href="tel:+917426933288" style="display:inline-block;padding:12px 24px;border-radius:999px;background:linear-gradient(135deg,#f97316,#fb923c);color:#ffffff;font-weight:600;font-size:13px;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;">Call our planners</a>
+                                <a href="tel:${CONCIERGE_NUMBER}" style="display:inline-block;padding:12px 24px;border-radius:999px;background:linear-gradient(135deg,#f97316,#fb923c);color:#ffffff;font-weight:600;font-size:13px;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;">Call our planners</a>
                               </td>
                               <td style="width:16px;">&nbsp;</td>
                               <td>
@@ -297,7 +310,9 @@ ${message.trim()}
                 <tr>
                   <td style="padding:24px 32px;background:#0f172a;color:rgba(248,250,252,0.72);font-size:12px;line-height:1.6;text-align:center;">
                     <p style="margin:0;color:rgba(248,250,252,0.8);">The Happy Safar &bull; Bespoke Rajasthan Journeys</p>
-                    <p style="margin:8px 0 0;">Need instant help? WhatsApp us at <a href="https://wa.me/917426933288" style="color:#fbbf24;text-decoration:none;font-weight:600;">+91 74269 33288</a></p>
+                    <div style="margin:14px 0 0;">
+                      <a href="https://wa.me/919251147383" style="display:inline-block;padding:12px 24px;border-radius:999px;background:linear-gradient(135deg,#16a34a,#22c55e);color:#ffffff;font-weight:600;font-size:13px;letter-spacing:0.12em;text-transform:uppercase;text-decoration:none;">Chat on WhatsApp</a>
+                    </div>
                   </td>
                 </tr>
               </table>

@@ -390,7 +390,7 @@ export default function AboutContent() {
 
         .about-overview {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
           gap: clamp(1.8rem, 4vw, 2.8rem);
           align-items: start;
         }
@@ -444,7 +444,7 @@ export default function AboutContent() {
 
         .family-feature {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
           gap: clamp(1.8rem, 4vw, 3rem);
           align-items: stretch;
         }
@@ -562,7 +562,7 @@ export default function AboutContent() {
 
         .about-services__grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
           gap: 1.2rem;
         }
 
@@ -604,7 +604,7 @@ export default function AboutContent() {
 
         .about-team__grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
           gap: 1.8rem;
         }
 
@@ -642,7 +642,7 @@ export default function AboutContent() {
           letter-spacing: 0.12em;
           text-transform: uppercase;
           color: rgba(148, 163, 184, 0.9);
-          white-space: nowrap;
+          white-space: normal;
         }
 
         .about-team__body p {

@@ -219,9 +219,9 @@ export default function Navbar() {
           />
         </div>
 
-        <div className="navbar__brand" aria-hidden="true">
+        {/* <div className="navbar__brand" aria-hidden="true">
           <span>The Happy Safar</span>
-        </div>
+        </div> */}
 
         <div className="navbar__pill">
           <nav className="navbar__links">

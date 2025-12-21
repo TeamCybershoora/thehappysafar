@@ -73,7 +73,7 @@ function StatCard({
 }) {
   const display = useCountUp(value, active);
   return (
-    <div className="rounded-2xl border border-amber-100 bg-white/80 p-4 text-left shadow-sm backdrop-blur">
+    <div className="w-full rounded-2xl border border-amber-100 bg-white/80 p-4 text-left shadow-sm backdrop-blur">
       <p className="text-2xl font-semibold text-zinc-900">
         {display.toLocaleString()}
         <span className="text-amber-500">{suffix}</span>
@@ -142,7 +142,7 @@ export default function Highlights() {
             </li>
           ))}
         </ul>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
           {stats.map((stat) => (
             <StatCard key={stat.label} active={isInView} {...stat} />
           ))}
@@ -174,6 +174,13 @@ export default function Highlights() {
         .planner-slider {
           position: relative;
           padding-bottom: 1rem;
+          width: 100%;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
         }
 
         .planner-slider__label {
@@ -185,25 +192,30 @@ export default function Highlights() {
         }
 
         .planner-slider__card {
+          width: 100%;
           max-width: 360px;
           margin: 0 auto;
           border-radius: 28px;
           background: linear-gradient(150deg, rgba(255, 247, 237, 0.95), #ffffff);
           border: 1px solid rgba(249, 115, 22, 0.35);
-          box-shadow: 0 20px 40px rgba(249, 115, 22, 0.18);
+         
           animation: card-slide 0.6s ease;
-          padding: 1.75rem 1.9rem;
+          padding: 1rem 1rem 1rem 1rem;
         }
 
         .planner-slider__body {
           display: grid;
           gap: 0.8rem;
+          justify-items: center;
+          text-align: center;
         }
 
         .planner-slider__header {
           display: flex;
           flex-direction: column;
           gap: 0.2rem;
+          align-items: center;
+          text-align: center;
         }
 
         .planner-slider__header h4 {
@@ -226,47 +238,51 @@ export default function Highlights() {
           color: rgba(15, 23, 42, 0.6);
           letter-spacing: 0.12em;
           text-transform: uppercase;
+          word-break: break-word;
+          text-align: center;
         }
 
         .planner-slider__focus {
           font-size: 0.95rem;
           line-height: 1.6;
           color: rgba(15, 23, 42, 0.8);
+          word-break: break-word;
+          text-align: center;
         }
 
         .planner-slider__badge {
           display: inline-flex;
           align-items: center;
-          gap: 0.35rem;
-          font-size: 0.75rem;
+          gap: 0.3rem;
+          font-size: 0.68rem;
           text-transform: uppercase;
-          letter-spacing: 0.18em;
+          letter-spacing: 0.2em;
           color: #f97316;
           background: rgba(249, 115, 22, 0.12);
           border-radius: 999px;
-          padding: 0.45rem 1rem;
+          padding: 0.35rem 0.85rem;
           width: max-content;
         }
 
         .planner-slider__cta {
-          justify-self: start;
+          justify-self: center;
           display: inline-flex;
           align-items: center;
-          gap: 0.4rem;
+          gap: 0.35rem;
           border-radius: 999px;
           background: linear-gradient(135deg, #f97316 0%, #f3720d 100%);
           color: #ffffff;
           text-decoration: none;
           font-weight: 600;
           letter-spacing: 0.08em;
-          padding: 0.65rem 1.45rem;
-          box-shadow: 0 15px 35px rgba(249, 115, 22, 0.28);
+          padding: 0.55rem 1.25rem;
+          box-shadow: 0 12px 28px rgba(249, 115, 22, 0.25);
           transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .planner-slider__cta:hover {
           transform: translateY(-2px);
-          box-shadow: 0 22px 45px rgba(249, 115, 22, 0.32);
+          box-shadow: 0 18px 38px rgba(249, 115, 22, 0.32);
         }
 
         @keyframes card-slide {

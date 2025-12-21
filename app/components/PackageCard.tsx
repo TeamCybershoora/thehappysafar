@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { MoveRight, PhoneCall, X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -7,6 +9,19 @@ import type { PackageDetails } from "@/types/packages";
 import { MapPinIcon } from "./ui/MapPinIcon";
 
 const CALL_NUMBER = "+917426933288";
+
+const normalizeId = (value: string) => value.replace(/\s+/g, " ").trim();
+
+const detailPageMap: Record<string, string> = {
+  "PACKAGE 01": "/package1",
+  "PACKAGE 02": "/package2",
+  "PACKAGE 03": "/package3",
+  "PACKAGE 04": "/package4",
+  "PACKAGE 05": "/package5",
+  "PACKAGE 06": "/package6",
+  "PACKAGE 07": "/package7",
+  "PACKAGE 08": "/package8",
+};
 
 const parseItineraryStep = (step: string) => {
   const normalized = step.replace(/\r\n/g, "\n");
@@ -66,6 +81,8 @@ export default function PackageCard({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitState, setSubmitState] = useState<"idle" | "success" | "error">("idle");
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const router = useRouter();
+  const detailPath = detailPageMap[normalizeId(details.id)] ?? null;
 
   const headlineTags = useMemo(() => {
     return itinerary
@@ -80,6 +97,14 @@ export default function PackageCard({
       .map((segment) => segment.trim())
       .filter(Boolean);
   }, [summary]);
+
+  const handleNavigateToDetailPage = useCallback(() => {
+    if (detailPath) {
+      router.push(detailPath);
+      return;
+    }
+    setShowDetailsModal(true);
+  }, [detailPath, router]);
 
   const handleDownloadBrochure = useCallback(async () => {
     if (isDownloading) return;
@@ -196,32 +221,51 @@ export default function PackageCard({
     }
   }, [showEnquiryModal]);
 
+  const renderCardMedia = (isInteractive: boolean) => (
+    <div className="relative">
+      <img
+        src={image}
+        alt={title}
+        className={cn(
+          "h-56 w-full object-cover",
+          isInteractive && "transition duration-300 ease-out group-hover:scale-[1.02]"
+        )}
+        loading="lazy"
+      />
+      <span className="absolute left-0 top-0 rounded-br-2xl bg-amber-500 px-4 py-1 text-xs font-semibold uppercase text-white shadow-md">
+        {priceTag}
+      </span>
+      <span className="absolute bottom-3 right-3 rounded-full bg-emerald-600/95 px-3 py-1 text-xs font-semibold text-white shadow">
+        {duration}
+      </span>
+    </div>
+  );
+
   return (
     <>
       <article
         data-package-id={details.id}
         className={cn(
           "package-card flex flex-col overflow-hidden rounded-3xl border border-amber-100 bg-white shadow-xl transition hover:-translate-y-1 hover:shadow-2xl",
+          "text-[13px] sm:text-base",
           className
         )}
       >
-        <div className="relative">
-          <img src={image} alt={title} className="h-56 w-full object-cover" loading="lazy" />
-          <span className="absolute left-0 top-0 rounded-br-2xl bg-amber-500 px-4 py-1 text-xs font-semibold uppercase text-white shadow-md">
-            {priceTag}
-          </span>
-          <span className="absolute bottom-3 right-3 rounded-full bg-emerald-600/95 px-3 py-1 text-xs font-semibold text-white shadow">
-            {duration}
-          </span>
-        </div>
+        {detailPath ? (
+          <Link href={detailPath} className="group block focus:outline-none">
+            {renderCardMedia(true)}
+          </Link>
+        ) : (
+          renderCardMedia(false)
+        )}
 
-        <div className="flex flex-1 flex-col gap-4 p-6">
+        <div className="flex flex-1 flex-col gap-4 p-5 sm:p-6">
           <div>
-            <h3 className="text-xl font-semibold text-zinc-900">{title}</h3>
-            <div className="mt-2 text-sm text-zinc-600">
+            <h3 className="text-lg font-semibold text-zinc-900 sm:text-xl">{title}</h3>
+            <div className="mt-2 text-[12px] text-zinc-600 sm:text-sm">
               <div className="flex items-start gap-2">
-                <MapPinIcon size={22} className="mt-0.5 text-[#8a410d]" />
-                <div className="mt-0.5 flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-[0.18em] text-[#8a410d]">
+                <MapPinIcon size={20} className="mt-0.5 text-[#8a410d]" />
+                <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-[#8a410d] sm:gap-2 sm:text-[11px]">
                   {summarySegments.length > 0 ? (
                     summarySegments.map((segment, idx) => (
                       <span key={`${segment}-${idx}`} className="flex items-center gap-2">
@@ -247,8 +291,8 @@ export default function PackageCard({
           <div className="mt-auto flex flex-col gap-3 sm:flex-row sm:items-stretch">
             <button
               type="button"
-              onClick={() => setShowDetailsModal(true)}
-              className="flex items-center justify-center gap-2 rounded-full border border-[#8a410d] px-4 py-2 text-sm font-semibold text-[#8a410d] shadow-sm transition hover:bg-[#fef4ec] sm:flex-[0_0_28%]"
+              onClick={handleNavigateToDetailPage}
+              className="flex items-center justify-center gap-2 rounded-full border border-[#8a410d] px-4 py-2 text-[12px] font-semibold text-[#8a410d] shadow-sm transition hover:bg-[#fef4ec] sm:flex-[0_0_28%] sm:text-sm"
             >
               See details
               <MoveRight className="h-4 w-4" />
@@ -257,7 +301,7 @@ export default function PackageCard({
               <button
                 type="button"
                 onClick={() => setShowEnquiryModal(true)}
-                className="flex flex-1 items-center justify-center gap-2 rounded-full bg-[#8a410d] px-4 py-2 text-sm font-semibold text-white shadow transition hover:bg-[#7a360b] sm:flex-[0_0_70%]"
+                className="flex flex-1 items-center justify-center gap-2 rounded-full bg-[#8a410d] px-4 py-2 text-[12px] font-semibold text-white shadow transition hover:bg-[#7a360b] sm:flex-[0_0_70%] sm:text-sm"
               >
                 Enquire Now
                 <MoveRight className="h-4 w-4" />
@@ -265,7 +309,7 @@ export default function PackageCard({
               <a
                 href={`tel:${CALL_NUMBER}`}
                 aria-label="Call our planners"
-                className="flex items-center justify-center gap-2 rounded-full border border-[#8a410d] px-4 py-2 text-sm font-semibold text-[#8a410d] shadow-sm transition hover:bg-[#fef4ec] sm:flex-[0_0_20%]"
+                className="flex items-center justify-center gap-2 rounded-full border border-[#8a410d] px-4 py-2 text-[12px] font-semibold text-[#8a410d] shadow-sm transition hover:bg-[#fef4ec] sm:flex-[0_0_20%] sm:text-sm"
               >
                 <PhoneCall className="h-4 w-4" />
                 <span className="sm:hidden">Call</span>
