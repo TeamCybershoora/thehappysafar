@@ -993,11 +993,11 @@ export default function PackageDetailView({ packageId }: { packageId: string }) 
                       <input type="checkbox" name="terms" required className="mt-0.5" />
                       <span>
                         I agree with The Happy Safar’s
-                        <a className="ml-1 text-amber-600 underline" href="#">
+                        <a className="ml-1 text-amber-600 underline" href="./terms">
                           Terms
                         </a>
                         &
-                        <a className="ml-1 text-amber-600 underline" href="#">
+                        <a className="ml-1 text-amber-600 underline" href="./privacy">
                           Privacy
                         </a>
                         .

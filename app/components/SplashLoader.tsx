@@ -2,29 +2,51 @@
 
 import { useEffect, useState } from "react";
 
+const STORAGE_KEY = "happySafarSplashSeen";
+
 export default function SplashLoader({ children }: { children: React.ReactNode }) {
   const [showContent, setShowContent] = useState(false);
+  const [shouldShowSplash, setShouldShowSplash] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowContent(true), 2000);
+    if (typeof window === "undefined") return;
+
+    const hasSeenSplash = sessionStorage.getItem(STORAGE_KEY) === "true";
+
+    if (hasSeenSplash) {
+      setShouldShowSplash(false);
+      setShowContent(true);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setShowContent(true);
+      sessionStorage.setItem(STORAGE_KEY, "true");
+      setTimeout(() => setShouldShowSplash(false), 400);
+    }, 2000);
+
     return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {
-    if (!showContent) {
-      const prevBody = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-      document.documentElement.classList.add("splash-lock");
-      return () => {
-        document.body.style.overflow = prevBody;
-        document.documentElement.classList.remove("splash-lock");
-      };
+    if (!shouldShowSplash || showContent) {
+      return undefined;
     }
-  }, [showContent]);
+
+    const prevBody = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    document.documentElement.classList.add("splash-lock");
+
+    return () => {
+      document.body.style.overflow = prevBody;
+      document.documentElement.classList.remove("splash-lock");
+    };
+  }, [shouldShowSplash, showContent]);
 
   return (
     <>
-      <div className={`splash ${showContent ? "splash--hidden" : ""}`}>
+      {shouldShowSplash && (
+        <div className={`splash ${showContent ? "splash--hidden" : ""}`}>
         <div className="loader">
           <span>
             <span />
@@ -46,7 +68,8 @@ export default function SplashLoader({ children }: { children: React.ReactNode }
         <div className="splash__text">
           <p className="splash__eyebrow">The Happy Safar</p>
         </div>
-      </div>
+        </div>
+      )}
       {showContent && <div className="splash__content">{children}</div>}
 
       <style jsx>{`

@@ -11,6 +11,8 @@ const quickLinks = [
   { label: "Packages", href: "./packages" },
   { label: "Popular Destinations", href: "/packages" },
   { label: "Contact", href: "./contact" },
+  { label: "Terms & Conditions", href: "./terms" },
+  { label: "Privacy & Policy", href: "./privacy" },
 ];
 
 const destinationLinks = [
