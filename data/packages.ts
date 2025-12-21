@@ -62,8 +62,7 @@ Stay overnight in a hotel.`,
     title: " CHRISTMAS  SPECIAL TOUR",
     duration: "5N/6D",
     priceTag: "Price on Request",
-    image:
-      "https://images.unsplash.com/photo-1636788989843-c1815de9c6ef?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "/images/christmas.jpg",
     summary:
       " JAIPUR LOCAL SIGHTSEEING, UDAIPUR VIA AJMER & PUSHKAR, UDAIPUR LOCAL SIGHTSEEING, RANTHAMBORE VIA CHITTORGARH, RANTHAMBORE JUNGLE SAFARI - JAIPUR STAY, JAIPUR FORT'S SIGHTSEEING - AIRPORT / RAILWAY STATION DROP ",
     itinerary: [
@@ -133,8 +132,7 @@ stay at Jaipur.`,
     title: "GOLDEN TRINGEL TOUR",
     duration: "5N/6D",
     priceTag: "Price on Request",
-    image:
-      "https://images.unsplash.com/photo-1636996627145-2344ae96ce35?q=80&w=1932&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "/images/taj.jpg",
     summary: "Arrival in New Delhi , Sightseeing of Delhi, Transfer to Agra and visit to Taj Mahal, Jaipur local sightseeing,     ",
     itinerary: [
       `Arrival in New Delhi :: Arrival in New Delhi Railway station / Airport. 
@@ -590,8 +588,7 @@ team will drop you off at Udaipur Airport/Railway Station for your onward journe
     title: "PINCK CITYY TOUR",
     duration: "1N/2D",
     priceTag: "Price on Request",
-    image:
-      "https://images.unsplash.com/photo-1704637342773-f546ccb00cb7?q=80&w=1074&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "/images/nahargard.jpg",
     summary: "Birla Temple-Amber Fort-Jaigarh Fort-Nahargarh Fort-Jal Mahal-Traditional Market-Albert Hall Museum , Albert Hall Museum-City Palace-Hawa Mahal-Janter - Manter",
     itinerary: [
       `Birla Temple, Amber Fort, Jaigarh Fort, Nahargarh Fort, Jal Mahal, Traditional Market, Albert Hall Museum  :: Birla Temple  
@@ -666,8 +663,7 @@ for precise celestial observations. It is a UNESCO World Heritage site known for
     title: "HONEYMOON TOUR PLAN",
     duration: "6N/7D",
     priceTag: "Price on Request",
-    image:
-      "https://images.unsplash.com/photo-1757451631936-a4d7a51954c0?q=80&w=914&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "/images/honeymoon.jpg",
     summary: "Jaipur railway station/ Airport to Hotel, Jaipur Local Sightseeing,  Udaipur via Ajmer & Pushkar, Jodhpur & Udaipur Local sightseeing, Jaisalmer city & Jodhpur Local Sightseeing, Jaisalmer Desert & Jaisalmer city Local Sightseeing, Jaisalmer City & Drop at Jaisalmer Airport / Railway Station",
     itinerary: [
       `Jaipur railway station/ Airport to Hotel :: Our executives are available to meet and greet you upon your arrival. 

@@ -22,7 +22,7 @@ const destinationLinks = [
 ];
 
 const services: { label: string; value: string; icon: LucideIcon }[] = [
-  { label: "Customer Support", value: "+91-7426933288", icon: Phone },
+  { label: "Customer Support", value: "+919251147383", icon: Phone },
   { label: "Drop Us an Email", value: "info@thehappysafar.com", icon: Mail },
   { label: "Studio", value: "Saraswati Tower, F-30, Sector 2, Central Spine, Vidyadhar Nagar, Jaipur, Rajasthan 302039", icon: MapPin },
 ];

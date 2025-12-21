@@ -3,14 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 
 const templates = [
-  "I’d like help planning a Rajasthan + Goa journey.",
+  "I’d like help planning a Rajasthan journey.",
   "Need a custom India itinerary for my family.",
   "Looking for a quick weekend escape suggestion.",
   "Can someone call me back about my travel dates?",
 ];
 
-const WHATSAPP_NUMBER = "917426933288";
-const CALL_NUMBER = "+917426933288";
+const WHATSAPP_NUMBER = "+919251147383";
+const CALL_NUMBER = "+919251147383";
 
 export default function FloatingNav() {
   const [popup, setPopup] = useState<"whatsapp" | "call" | null>(null);

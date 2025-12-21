@@ -14,11 +14,11 @@ import { gsap } from "gsap";
 import { persistAdminSession, isAdminSessionActive } from "../lib/adminSession";
 
 const navLinks = [
-  { href: "#home", label: "Home" },
-  { href: "#about", label: "About Us" },
-  { href: "#packages", label: "Packages" },
-  { href: "#faq", label: "FAQ's" },
-  { href: "#contact", label: "Contact" },
+  { href: "/", label: "Home" },
+  { href: "/about", label: "About Us" },
+  { href: "/packages", label: "Packages" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/contact", label: "Contact" },
 ];
 
 export default function Navbar() {
@@ -37,7 +37,10 @@ export default function Navbar() {
   const secretClickTimerRef = useRef<number | null>(null);
 
   const handleAnchorNav = (event: React.MouseEvent<HTMLAnchorElement>, href: string) => {
-    if (!href.startsWith("#")) return;
+    if (!href.startsWith("#")) {
+      setIsMenuOpen(false);
+      return;
+    }
     event.preventDefault();
     const target = document.querySelector(href);
     if (target) {
@@ -216,6 +219,10 @@ export default function Navbar() {
           />
         </div>
 
+        <div className="navbar__brand" aria-hidden="true">
+          <span>The Happy Safar</span>
+        </div>
+
         <div className="navbar__pill">
           <nav className="navbar__links">
             {navLinks.map((link) => (
@@ -334,20 +341,25 @@ export default function Navbar() {
 
       <style jsx>{`
         .navbar {
-          position: sticky;
+          position: fixed;
           top: 0;
-          z-index: 50;
-          background: transparent;
+          left: 0;
+          right: 0;
+          z-index: 70;
+          
+          
           color: var(--color-foreground);
           --nav-orange: rgba(249, 115, 22, 0.1);
           --nav-orange-dark: #c2410c;
           --nav-orange-light: #ffe6d3;
           --nav-height: 90px;
           transition: transform 0.35s ease, opacity 0.25s ease;
+          
         }
 
         .navbar--hidden {
           transform: translateY(-120%);
+          opacity: 0;
         }
 
         .navbar__inner {
@@ -376,6 +388,26 @@ export default function Navbar() {
           border: 1px solid rgba(0, 0, 0, 0.05);
           box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
           justify-self: start;
+        }
+
+        .navbar__brand {
+          display: none;
+          align-items: center;
+          justify-content: center;
+          padding: 0.4rem 1.1rem;
+          border-radius: 999px;
+          background: rgba(255, 255, 255, 0.96);
+          border: 1px solid rgba(249, 115, 22, 0.45);
+          box-shadow: 0 12px 30px rgba(249, 115, 22, 0.22);
+          font-weight: 600;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: #f97316;
+          font-size: 0.78rem;
+        }
+
+        .navbar__brand span {
+          white-space: nowrap;
         }
 
         .logo-image {
@@ -519,7 +551,7 @@ export default function Navbar() {
           display: none;
           border-radius: 999px;
           border: 1px solid rgba(249, 115, 22, 0.35);
-          background: rgba(255, 255, 255, 0.9);
+          background: #ffffff;
           padding: 0.4rem 0.65rem;
           color: var(--nav-orange-dark);
           cursor: pointer;
@@ -527,7 +559,7 @@ export default function Navbar() {
         }
 
         .menu-toggle:hover {
-          background: rgba(249, 115, 22, 0.08);
+          background: rgba(255, 255, 255, 1);
         }
 
         .admin-modal__backdrop {
@@ -652,15 +684,25 @@ export default function Navbar() {
 
         @media (max-width: 950px) {
           .navbar__inner {
-            grid-template-columns: auto auto;
-            grid-template-areas:
-              "logo actions"
-              "pill pill";
-            row-gap: 0.75rem;
+            grid-template-columns: auto 1fr auto;
+            grid-template-areas: "logo brand actions";
+            align-items: center;
+            row-gap: 0;
           }
 
           .navbar__logo-block {
             grid-area: logo;
+            justify-self: start;
+            padding: 0.35rem 0.75rem;
+          }
+
+          .navbar__brand {
+            grid-area: brand;
+            justify-self: center;
+            font-size: 0.82rem;
+            letter-spacing: 0.24em;
+            display: inline-flex;
+            padding: 0.4rem 1.1rem;
           }
 
           .navbar__pill {
@@ -682,6 +724,8 @@ export default function Navbar() {
           .navbar__actions {
             justify-content: flex-end;
             gap: 0.5rem;
+            grid-area: actions;
+            align-items: center;
           }
 
           .menu-toggle {

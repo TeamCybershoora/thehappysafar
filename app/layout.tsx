@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import "./global.css";
-import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { ThemeProvider } from "./components/ThemeProvider";
 import LenisProvider from "./components/LenisProvider";
 import FloatingNav from "./components/FloatingNav";
 import SplashLoader from "./components/SplashLoader";
+import GlobalEnquiryModal from "./components/GlobalEnquiryModal";
 
 export const metadata: Metadata = {
   title: "The Happy Safar",
@@ -18,13 +18,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" data-theme="light">
+    <html lang="en" data-theme="light" suppressHydrationWarning>
       <body className="antialiased">
         <ThemeProvider>
           <SplashLoader>
             <LenisProvider>
-              <Navbar />
+             
               <main>{children}</main>
+              <GlobalEnquiryModal />
               <Footer />
               <FloatingNav />
             </LenisProvider>

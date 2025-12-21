@@ -1,42 +1,38 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import CurvedLoop from "../components/CurvedLoop";
 import { curatedPackages } from "@/data/packages";
+import Navbar from "./Navbar";
 
 const HERO_BACKGROUNDS = [
-  "./images/1.jpg",
-  "./images/2.jpg",
-  "./images/3.jpg",
-  "./images/4.jpg",
-  "./images/5.jpg",
+  "./images/christmas.jpg",
+  "./images/hawamahal.jpg",
+  "./images/honeymoon.jpg",
+  "./images/jaisalmair.jpg",
+  "./images/jodhpur.jpg",
+  "./images/rajasthan.jpg",
+  "./images/nahargard.jpg",
+  "./images/taj.jpg",
 ];
 
-const highlights = ["Schedule", "Wishlist", "About"];
-
 export default function Hero() {
-  const [isEnquireOpen, setEnquireOpen] = useState(false);
   const [activeBgIndex, setActiveBgIndex] = useState(0);
   const [slideshowReady, setSlideshowReady] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitState, setSubmitState] = useState<"idle" | "success" | "error">("idle");
-  const [submitError, setSubmitError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showSearchOverlay, setShowSearchOverlay] = useState(false);
+  const router = useRouter();
 
-  useEffect(() => {
-    const handler = () => setEnquireOpen(true);
-    window.addEventListener("open-enquiry", handler as EventListener);
-    return () => window.removeEventListener("open-enquiry", handler as EventListener);
+  const openEnquiry = useCallback(() => {
+    window.dispatchEvent(
+      new CustomEvent("open-enquiry", {
+        detail: {
+          source: "hero",
+        },
+      }),
+    );
   }, []);
-
-  useEffect(() => {
-    if (!isEnquireOpen) {
-      setIsSubmitting(false);
-      setSubmitState("idle");
-      setSubmitError(null);
-    }
-  }, [isEnquireOpen]);
 
   useEffect(() => {
     let cancelled = false;
@@ -121,229 +117,121 @@ export default function Hero() {
   };
 
   return (
-    <section className="hero-nz" aria-labelledby="hero-nz-title">
-      <div className="hero-nz__bg-stack" aria-hidden="true">
-        {HERO_BACKGROUNDS.map((imageUrl, index) => (
-          <div
-            key={imageUrl}
-            className={`hero-nz__bg-layer${index === activeBgIndex ? " hero-nz__bg-layer--active" : ""}`}
-            style={{ backgroundImage: `url(${imageUrl})` }}
-          />
-        ))}
-      </div>
-      <div className="hero-nz__overlay" />
-      <div className="hero-nz__fade" aria-hidden="true" />
-
-      <div className="hero-nz__chrome">
-        <div className="hero-nz__top">
-          <div className="hero-nz__indicator" aria-hidden="true" />
-          <span>Tailor every escape with The Happy Safar</span>
-
-          <div className="hero-nz__search" role="search">
-            <input
-              type="text"
-              placeholder="Search Rajasthan journeys"
-              aria-label="Search Rajasthan journeys"
-              value={searchTerm}
-              onChange={(event) => {
-                setSearchTerm(event.target.value);
-                const hasQuery = event.target.value.trim().length > 0;
-                setShowSearchOverlay(hasQuery);
-              }}
-              onFocus={() => {
-                if (searchTerm.trim().length > 0) {
-                  setShowSearchOverlay(true);
-                }
-              }}
-              onKeyDown={(event) => {
-                if (event.key === "Enter") {
-                  event.preventDefault();
-                  handleSearchSubmit();
-                }
-              }}
+    <>
+      <Navbar />
+      <section className="hero-nz" aria-labelledby="hero-nz-title">
+        <div className="hero-nz__bg-stack" aria-hidden="true">
+          {HERO_BACKGROUNDS.map((imageUrl, index) => (
+            <div
+              key={imageUrl}
+              className={`hero-nz__bg-layer${index === activeBgIndex ? " hero-nz__bg-layer--active" : ""}`}
+              style={{ backgroundImage: `url(${imageUrl})` }}
             />
-            <button type="button" onClick={handleSearchSubmit}>
-              Search
-            </button>
-            {showSearchOverlay && (
-              <div className="hero-search-inline">
-                {limitedMatches.length > 0 ? (
-                  <ul>
-                    {limitedMatches.map((pkg) => (
-                      <li key={pkg.id}>
-                        <button type="button" onClick={() => handleResultClick(pkg.id)}>
-                          <span className="hero-search__title">{pkg.title}</span>
-                          <span className="hero-search__meta">{pkg.duration} • {pkg.priceTag ?? "Price on request"}</span>
-                          <span className="hero-search__summary">{pkg.summary}</span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <div className="hero-search__empty">
-                    <p>We couldn’t find a journey that matches “{searchTerm.trim()}”.</p>
-                    <p>Try different keywords or explore the featured cards below.</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          ))}
         </div>
+        <div className="hero-nz__overlay" />
+        <div className="hero-nz__fade" aria-hidden="true" />
 
-        <div className="hero-nz__main">
-          <div className="hero-nz__text">
-            <div className="hero-nz__heading-block">
-              <p className="hero-nz__eyebrow">The Happy Safar</p>
-              <h1 id="hero-nz-title">
-                <span>Rajasthan</span> Awaits You
-              </h1>
-            </div>
-            <div className="hero-nz__desc-grid">
-              <p>
-                From Jaipur’s pink boulevards to the dunes of Jaisalmer and the blue lanes of Jodhpur, The Happy Safar
-                scripts soulful Rajasthan stories. We obsess over palace stays, chauffeured drives, and local hosts so
-                every leg of your desert escape feels effortless.
-              </p>
-            </div>
+        <div className="hero-nz__chrome">
+          <div className="hero-nz__top">
+            <div className="hero-nz__indicator" aria-hidden="true" />
+            <span>Tailor every escape with The Happy Safar</span>
 
-            <div className="hero-nz__cta-row">
-              <button
-                type="button"
-                className="hero-nz__cta-primary"
-                onClick={() => setEnquireOpen(true)}
-              >
-                Plan with THS
-              </button>
-              <button
-                type="button"
-                className="hero-nz__cta-ghost"
-                onClick={() => {
-                  const target = document.querySelector("#packages");
-                  if (target) {
-                    target.scrollIntoView({ behavior: "smooth", block: "start" });
+            <div className="hero-nz__search" role="search">
+              <input
+                type="text"
+                placeholder="Search Rajasthan journeys"
+                aria-label="Search Rajasthan journeys"
+                value={searchTerm}
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  const hasQuery = event.target.value.trim().length > 0;
+                  setShowSearchOverlay(hasQuery);
+                }}
+                onFocus={() => {
+                  if (searchTerm.trim().length > 0) {
+                    setShowSearchOverlay(true);
                   }
                 }}
-              >
-                See sample routes
-              </button>
-            </div>
-          </div>
-
-          <div className="hero-nz__rail-stack">
-            <div className="hero-nz__enquire-launch">
-              <p className="hero-nz__enquire-label">Need help planning?</p>
-              <button type="button" onClick={() => setEnquireOpen(true)}>
-                Enquire Now
-              </button>
-              <span>Talk to a Rajasthan planner in under 10 minutes.</span>
-            </div>
-            {/* <div className="hero-nz__rail" aria-label="Quick actions">
-              <span className="hero-nz__rail-label">Plan & Go</span>
-              {highlights.map((item) => (
-                <button key={item} type="button">
-                  {item}
-                </button>
-              ))}
-            </div> */}
-             
-          </div>
-          
-        </div>
-
-        {isEnquireOpen && (
-          <div className="hero-nz__modal" role="dialog" aria-modal="true" aria-labelledby="enquire-heading">
-            <div className="hero-nz__modal-backdrop" onClick={() => setEnquireOpen(false)} />
-            <div className="hero-nz__modal-card">
-              <button className="hero-nz__modal-close" aria-label="Close enquiry" onClick={() => setEnquireOpen(false)}>
-                ×
-              </button>
-              <p className="hero-nz__modal-eyebrow">Talk to The Happy Safar</p>
-              <h2 id="enquire-heading">Plan your Rajasthan escape</h2>
-              {submitState === "success" ? (
-                <div className="hero-nz__success">
-                  <div className="hero-nz__success-icon">✓</div>
-                  <h3>Thanks for your enquiry!</h3>
-                  <p>Our Rajasthan concierge will connect with you shortly.</p>
-                  <button
-                    type="button"
-                    className="hero-nz__success-action"
-                    onClick={() => {
-                      setSubmitState("idle");
-                      setSubmitError(null);
-                    }}
-                  >
-                    Add More Enquiry
-                  </button>
-                </div>
-              ) : (
-                <form
-                  className="hero-nz__modal-form"
-                  onSubmit={async (event) => {
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
                     event.preventDefault();
-                    if (isSubmitting) return;
-                    setIsSubmitting(true);
-                    setSubmitState("idle");
-                    setSubmitError(null);
-
-                    const formData = new FormData(event.currentTarget);
-                    const form = event.currentTarget;
-                    const payload = {
-                      name: String(formData.get("name") ?? "").trim(),
-                      phone: String(formData.get("phone") ?? "").trim(),
-                      email: String(formData.get("email") ?? "").trim(),
-                      message: String(formData.get("message") ?? "").trim(),
-                      source: "hero-modal",
-                    };
-
-                    try {
-                      const response = await fetch("/api/enquiry", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(payload),
-                      });
-
-                      if (!response.ok) {
-                        throw new Error("Failed to submit enquiry");
-                      }
-
-                      setSubmitState("success");
-                      form.reset();
-                    } catch (error) {
-                      console.error("Hero enquiry failed", error);
-                      setSubmitState("error");
-                      setSubmitError("Unable to submit right now. Please try again or WhatsApp us.");
-                    } finally {
-                      setIsSubmitting(false);
-                    }
-                  }}
-                >
-                  <input name="name" type="text" placeholder="Your name" required />
-                  <input name="phone" type="tel" placeholder="Mobile number" required />
-                  <input name="email" type="email" placeholder="Email" required />
-                  <textarea name="message" placeholder="What kind of trip are you dreaming about?" rows={4} required />
-                  <div className="hero-nz__modal-actions">
-                    <button type="submit" className="hero-nz__modal-primary" disabled={isSubmitting}>
-                      {isSubmitting ? "Sending..." : "Send Enquiry"}
-                    </button>
-                    <button type="button" className="hero-nz__modal-whatsapp" aria-label="Chat on WhatsApp">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" role="img">
-                        <path
-                          fill="currentColor"
-                          d="M19.05 4.91A9.82 9.82 0 0 0 12.04 2c-5.46 0-9.91 4.45-9.91 9.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91c0-2.65-1.03-5.14-2.9-7.01m-7.01 15.24c-1.48 0-2.93-.4-4.2-1.15l-.3-.18l-3.12.82l.83-3.04l-.2-.31a8.26 8.26 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.24-8.24c2.2 0 4.27.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.83c.02 4.54-3.68 8.23-8.22 8.23m4.52-6.16c-.25-.12-1.47-.72-1.69-.81c-.23-.08-.39-.12-.56.12c-.17.25-.64.81-.78.97c-.14.17-.29.19-.54.06c-.25-.12-1.05-.39-1.99-1.23c-.74-.66-1.23-1.47-1.38-1.72c-.14-.25-.02-.38.11-.51c.11-.11.25-.29.37-.43s.17-.25.25-.41c.08-.17.04-.31-.02-.43s-.56-1.34-.76-1.84c-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31c-.22.25-.86.85-.86 2.07s.89 2.4 1.01 2.56c.12.17 1.75 2.67 4.23 3.74c.59.26 1.05.41 1.41.52c.59.19 1.13.16 1.56.1c.48-.07 1.47-.6 1.67-1.18c.21-.58.21-1.07.14-1.18s-.22-.16-.47-.28"
-                        />
-                      </svg>
-                      <span className="sr-only">Chat on WhatsApp</span>
-                    </button>
-                  </div>
-                  {submitState === "error" && submitError && <p className="hero-nz__modal-error">{submitError}</p>}
-                </form>
+                    handleSearchSubmit();
+                  }
+                }}
+              />
+              <button type="button" onClick={handleSearchSubmit}>
+                Search
+              </button>
+              {showSearchOverlay && (
+                <div className="hero-search-inline">
+                  {limitedMatches.length > 0 ? (
+                    <ul>
+                      {limitedMatches.map((pkg) => (
+                        <li key={pkg.id}>
+                          <button type="button" onClick={() => handleResultClick(pkg.id)}>
+                            <span className="hero-search__title">{pkg.title}</span>
+                            <span className="hero-search__meta">{pkg.duration} • {pkg.priceTag ?? "Price on request"}</span>
+                            <span className="hero-search__summary">{pkg.summary}</span>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div className="hero-search__empty">
+                      <p>We couldn’t find a journey that matches “{searchTerm.trim()}”.</p>
+                      <p>Try different keywords or explore the featured cards below.</p>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </div>
-        )}
-         <CurvedLoop marqueeText="The Happy Safar ✦ Across Rajasthan ✦ Custom Desert Trails ✦" speed={7} curveAmount={200} />
-      </div>
 
+          <div className="hero-nz__main">
+            <div className="hero-nz__text">
+              <div className="hero-nz__heading-block">
+                <p className="hero-nz__eyebrow">The Happy Safar</p>
+                <h1 id="hero-nz-title">
+                  <span>Rajasthan</span> Awaits You
+                </h1>
+              </div>
+              <div className="hero-nz__desc-grid">
+                <p>
+                  From Jaipur’s pink boulevards to the dunes of Jaisalmer and the blue lanes of Jodhpur, The Happy Safar
+                  scripts soulful Rajasthan stories. We obsess over palace stays, chauffeured drives, and local hosts so
+                  every leg of your desert escape feels effortless.
+                </p>
+              </div>
+
+              <div className="hero-nz__cta-row">
+                <button type="button" className="hero-nz__cta-primary" onClick={openEnquiry}>
+                  Plan with THS
+                </button>
+                <button
+                  type="button"
+                  className="hero-nz__cta-ghost"
+                  onClick={() => router.push("/packages")}
+                >
+                  See sample routes
+                </button>
+              </div>
+            </div>
+
+            <div className="hero-nz__rail-stack">
+              <div className="hero-nz__enquire-launch">
+                <p className="hero-nz__enquire-label">Need help planning?</p>
+                <button type="button" onClick={openEnquiry}>
+                  Enquire Now
+                </button>
+                <span>Talk to a Rajasthan planner in under 10 minutes.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <CurvedLoop marqueeText="The Happy Safar ✦ Across Rajasthan ✦ Custom Desert Trails ✦" speed={7} curveAmount={200} />
+      </section>
       <style jsx>{`
         .hero-nz {
           position: relative;
@@ -353,7 +241,7 @@ export default function Hero() {
           color: #fff;
           border-radius: 0;
           --nav-height: 96px;
-          margin-top: calc(-1 * var(--nav-height));
+          margin-top: -1rem;
           padding-top: var(--nav-height);
         }
 
@@ -676,101 +564,6 @@ export default function Hero() {
           color: rgba(255, 255, 255, 0.75);
         }
 
-        .hero-nz__modal {
-          position: fixed;
-          inset: 0;
-          display: grid;
-          place-items: center;
-          z-index: 99;
-          animation: fadeIn 0.3s ease forwards;
-        }
-
-        .hero-nz__modal-backdrop {
-          position: absolute;
-          inset: 0;
-          background: rgba(0, 0, 0, 0.65);
-          backdrop-filter: blur(4px);
-        }
-
-        .hero-nz__modal-card {
-          position: relative;
-          z-index: 1;
-          background: rgba(255, 255, 255, 0.98);
-          color: #0f172a;
-          border-radius: 32px;
-          padding: clamp(1.5rem, 3vw, 2.5rem);
-          width: min(420px, 90vw);
-          box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
-          animation: slideUp 0.35s ease forwards;
-        }
-
-        .hero-nz__modal-close {
-          position: absolute;
-          top: 1rem;
-          right: 1rem;
-          border: none;
-          background: transparent;
-          font-size: 1.5rem;
-          cursor: pointer;
-        }
-
-        .hero-nz__modal-eyebrow {
-          font-size: 0.8rem;
-          letter-spacing: 0.3em;
-        }
-
-        .hero-nz__modal-form {
-          display: flex;
-          flex-direction: column;
-          gap: 0.85rem;
-        }
-
-        .hero-nz__modal-form input,
-        .hero-nz__modal-form textarea {
-          border-radius: 18px;
-          border: 1px solid rgba(0, 0, 0, 0.1);
-          padding: 0.75rem 1rem;
-          font-size: 0.95rem;
-        }
-
-        .hero-nz__modal-actions {
-          display: flex;
-          align-items: stretch;
-          gap: 0.7rem;
-        }
-
-        .hero-nz__modal-primary {
-          border: none;
-          border-radius: 999px;
-          padding: 0.85rem 0;
-          font-weight: 700;
-          color: #fff;
-          background: #f46f12;
-          cursor: pointer;
-          width: 100%;
-        }
-
-        .hero-nz__modal-whatsapp {
-          width: 52px;
-          height: 52px;
-          border-radius: 999px;
-          border: none;
-          background: linear-gradient(135deg, #22c55e, #16a34a);
-          color: #fff;
-          font-weight: 700;
-          cursor: pointer;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          padding: 0;
-          box-shadow: 0 15px 25px rgba(34, 197, 94, 0.25);
-        }
-
-        .hero-nz__modal-whatsapp svg {
-          width: 24px;
-          height: 24px;
-        }
-
         @keyframes hero-search-pop {
           from {
             opacity: 0;
@@ -826,16 +619,11 @@ export default function Hero() {
             grid-template-columns: 1fr;
           }
 
-          .hero-nz__rail {
-            flex-direction: row;
-            flex-wrap: wrap;
-          }
-
           .hero-nz__rail button {
             flex: 1 1 calc(50% - 0.65rem);
           }
         }
       `}</style>
-    </section>
+    </> 
   );
 }

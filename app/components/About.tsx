@@ -4,34 +4,22 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 const plannerProfiles = [
   {
-    name: "Ananya Kapoor",
-    role: "Luxury desert journeys",
-    location: "Jaipur HQ",
-    focus: "Designs dune residencies with private hosts and surprise rituals.",
-    image: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=800&q=80",
+    name: "Amit Kumar",
+    role: "Lead Journey Planner",
+    location: "Luxury heritage stays • VIP ground handling • Celebration travel",
+    focus:
+      "Crafts bespoke Rajasthan circuits with meticulous logistics, premium stays, and on-call concierge support for every family.",
   },
   {
-    name: "Devendra Rathore",
-    role: "Heritage circuits lead",
-    location: "Jodhpur pod",
-    focus: "Blends fort stays, blue-lane walks, and curated storyteller dinners.",
-    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    name: "Meera Saxena",
-    role: "Wellness retreats in Aravallis",
-    location: "Udaipur studio",
-    focus: "Maps spa rituals, lake palaces, and mindful culinary sessions.",
-    image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    name: "Raghav Singh",
-    role: "Leopard + safari expert",
-    location: "Jawai field desk",
-    focus: "Leads dawn tracking, shepherd lunches, and stargazing jeep suppers.",
-    image: "https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=800&q=80",
+    name: "Deepanshu Bohra",
+    role: "Experiential Travel Designer",
+    location: "Cultural immersions • Adventure add-ons • Family-friendly itineraries",
+    focus:
+      "Sculpts immersive moments—from folk performances to dune dinners—while ensuring seamless pacing for all age groups.",
   },
 ];
+
+const CALL_NUMBER = "+919251147383";
 
 const missionPoints = [
   "Curate hyperlocal experiences with palace historians, folk musicians, and desert naturalists.",
@@ -164,14 +152,21 @@ export default function Highlights() {
       <div className="planner-slider mt-6" aria-live="polite">
         <p className="planner-slider__label">Meet your planners</p>
         <article key={plannerProfiles[activeIndex].name} className="planner-slider__card">
-          <div className="planner-slider__image">
-            <img src={plannerProfiles[activeIndex].image} alt={plannerProfiles[activeIndex].name} loading="lazy" />
-          </div>
           <div className="planner-slider__body">
-            <h4>{plannerProfiles[activeIndex].name}</h4>
-            <p className="planner-slider__summary">
-              {plannerProfiles[activeIndex].location} · {plannerProfiles[activeIndex].focus}
-            </p>
+            <div className="planner-slider__header">
+              <h4>{plannerProfiles[activeIndex].name}</h4>
+              <span>{plannerProfiles[activeIndex].role}</span>
+            </div>
+            <p className="planner-slider__summary">{plannerProfiles[activeIndex].location}</p>
+            <p className="planner-slider__focus">{plannerProfiles[activeIndex].focus}</p>
+            <div className="planner-slider__badge">Available for 1:1 Travel planning</div>
+            <a
+              href={`tel:${CALL_NUMBER}`}
+              className="planner-slider__cta"
+              aria-label={`Call ${plannerProfiles[activeIndex].name}`}
+            >
+              Call {plannerProfiles[activeIndex].name.split(" ")[0]}
+            </a>
           </div>
         </article>
       </div>
@@ -190,59 +185,88 @@ export default function Highlights() {
         }
 
         .planner-slider__card {
-          max-width: 340px;
+          max-width: 360px;
           margin: 0 auto;
           border-radius: 28px;
-          background: #fff;
-          border: 1px solid rgba(251, 191, 36, 0.35);
-          box-shadow: 0 16px 30px rgba(249, 115, 22, 0.18);
-          overflow: hidden;
+          background: linear-gradient(150deg, rgba(255, 247, 237, 0.95), #ffffff);
+          border: 1px solid rgba(249, 115, 22, 0.35);
+          box-shadow: 0 20px 40px rgba(249, 115, 22, 0.18);
           animation: card-slide 0.6s ease;
-        }
-
-        .planner-slider__image {
-          height: 260px;
-          overflow: hidden;
-          position: relative;
-        }
-
-        .planner-slider__image img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          transform-origin: center;
-          transition: transform 0.6s ease;
-        }
-
-        .planner-slider__card:hover .planner-slider__image img {
-          transform: scale(1.05);
-        }
-
-        .planner-slider__image::after {
-          content: "";
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(180deg, rgba(255, 255, 255, 0) 80%, rgba(255, 255, 255, 5) 100%);
-          pointer-events: none;
+          padding: 1.75rem 1.9rem;
         }
 
         .planner-slider__body {
-          padding: 1.25rem;
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
+          display: grid;
+          gap: 0.8rem;
         }
 
-        .planner-slider__body h4 {
-          font-size: 1.1rem;
-          font-weight: 600;
+        .planner-slider__header {
+          display: flex;
+          flex-direction: column;
+          gap: 0.2rem;
+        }
+
+        .planner-slider__header h4 {
+          font-size: 1.2rem;
+          font-weight: 700;
           color: #c2410c;
         }
 
+        .planner-slider__header span {
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: #fb923c;
+          text-transform: uppercase;
+          letter-spacing: 0.14em;
+        }
+
         .planner-slider__summary {
-          font-size: 0.9rem;
-          color: #475569;
-          line-height: 1.5;
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: rgba(15, 23, 42, 0.6);
+          letter-spacing: 0.12em;
+          text-transform: uppercase;
+        }
+
+        .planner-slider__focus {
+          font-size: 0.95rem;
+          line-height: 1.6;
+          color: rgba(15, 23, 42, 0.8);
+        }
+
+        .planner-slider__badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.35rem;
+          font-size: 0.75rem;
+          text-transform: uppercase;
+          letter-spacing: 0.18em;
+          color: #f97316;
+          background: rgba(249, 115, 22, 0.12);
+          border-radius: 999px;
+          padding: 0.45rem 1rem;
+          width: max-content;
+        }
+
+        .planner-slider__cta {
+          justify-self: start;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.4rem;
+          border-radius: 999px;
+          background: linear-gradient(135deg, #f97316 0%, #f3720d 100%);
+          color: #ffffff;
+          text-decoration: none;
+          font-weight: 600;
+          letter-spacing: 0.08em;
+          padding: 0.65rem 1.45rem;
+          box-shadow: 0 15px 35px rgba(249, 115, 22, 0.28);
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .planner-slider__cta:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 22px 45px rgba(249, 115, 22, 0.32);
         }
 
         @keyframes card-slide {

@@ -421,26 +421,6 @@ export default function PackageCard({
                 </button>
               </div>
 
-              <div className="rounded-2xl bg-amber-50/80 p-4 text-sm text-zinc-600">
-                <p className="font-semibold text-amber-800">Included trail</p>
-                <ul className="mt-2 list-disc space-y-1 pl-4">
-                  {itinerary.map((step, index) => {
-                    const { tag, paragraphs, content } = parseItineraryStep(step);
-                    const bullets = paragraphs.length > 0 ? paragraphs : [content];
-                    return (
-                      <li key={`enquiry-${index}`} className="space-y-1 rounded-2xl bg-amber-100/60 p-3 shadow-sm">
-                        <p className="font-semibold text-amber-900">{tag ?? bullets[0]}</p>
-                        {bullets.slice(tag ? 0 : 1).map((line, idx) => (
-                          <span key={`enquiry-${index}-line-${idx}`} className="block text-amber-900/80">
-                            {line}
-                          </span>
-                        ))}
-                      </li>
-                    );
-                  })}
-                </ul>
-              </div>
-
               {submitState === "success" ? (
                 <div className="enquiry-success">
                   <div className="enquiry-success__icon">✓</div>

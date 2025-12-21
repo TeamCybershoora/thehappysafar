@@ -13,12 +13,11 @@ export default function SplashLoader({ children }: { children: React.ReactNode }
   useEffect(() => {
     if (!showContent) {
       const prevBody = document.body.style.overflow;
-      const prevHtml = document.documentElement.style.overflow;
       document.body.style.overflow = "hidden";
-      document.documentElement.style.overflow = "hidden";
+      document.documentElement.classList.add("splash-lock");
       return () => {
         document.body.style.overflow = prevBody;
-        document.documentElement.style.overflow = prevHtml;
+        document.documentElement.classList.remove("splash-lock");
       };
     }
   }, [showContent]);
@@ -379,6 +378,10 @@ export default function SplashLoader({ children }: { children: React.ReactNode }
           to {
             opacity: 1;
           }
+        }
+
+        :global(html.splash-lock) {
+          overflow: hidden;
         }
       `}</style>
     </>
