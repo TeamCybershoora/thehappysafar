@@ -4,7 +4,7 @@ import { ThemeProvider } from "./components/ThemeProvider";
 import SplashLoader from "./components/SplashLoader";
 import GlobalEnquiryModal from "./components/GlobalEnquiryModal";
 import RouteLayout from "./components/RouteLayout";
-// import InspectGuard from "./components/guards/InspectGuard";
+import InspectGuard from "./components/guards/InspectGuard";
 
 const BASE_URL = "https://www.thehappysafar.com";
 
@@ -113,7 +113,7 @@ export default function RootLayout({
     <html lang="en" data-theme="light" suppressHydrationWarning>
       <body className="antialiased">
         <ThemeProvider>
-          {/* <InspectGuard /> */}
+          <InspectGuard />
           <SplashLoader>
             <RouteLayout>
               <script
