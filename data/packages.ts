@@ -132,7 +132,7 @@ stay at Jaipur.`,
     title: "GOLDEN TRINGEL TOUR",
     duration: "5N/6D",
     priceTag: "Price on Request",
-    image: "/images/taj.jpg",
+    image: "/images/agra.avif",
     summary: "Arrival in New Delhi , Sightseeing of Delhi, Transfer to Agra and visit to Taj Mahal, Jaipur local sightseeing,     ",
     itinerary: [
       `Arrival in New Delhi :: Arrival in New Delhi Railway station / Airport. 
