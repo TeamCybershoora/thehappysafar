@@ -9,6 +9,18 @@ type LenisProviderProps = {
 
 export default function LenisProvider({ children }: LenisProviderProps) {
   useEffect(() => {
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    const isSmallScreen =
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(max-width: 768px)").matches;
+
+    if (prefersReducedMotion || isSmallScreen) return;
+
     const lenis = new Lenis({
       duration: 1.1,
       smoothWheel: true,

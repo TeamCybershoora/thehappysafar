@@ -9,7 +9,7 @@ import HowItWorks from "./components/HowItWorks";
 import FaqSection from "./components/FaqSection";
 import WhyChooseUs from "./components/WhyChooseUs";
 import ContactSection from "./components/ContactSection";
-import { Skiper39 } from "./components/skiper39";
+import Skiper39Client from "./components/Skiper39Client";
 import CurvedLoop from "./components/CurvedLoop";
 
 export default function Home() {
@@ -19,7 +19,6 @@ export default function Home() {
       <Hero />
      
       <div className="space-y-8 bg-linear-to-b from-amber-50 via-white to-white">
-        <About />
         <section
           id="packages"
           className="mx-auto flex max-w-6xl flex-col gap-6 px-6 pb-20 pt-10 text-left"
@@ -37,6 +36,7 @@ export default function Home() {
             ))}
           </div>
         </section>
+        <About />
         <PopularDestinations />
         <OurServices />
         <HowItWorks />
@@ -44,7 +44,7 @@ export default function Home() {
         <WhyChooseUs />
         <ContactSection />
         <section className="relative -mt-8 min-h-[70vh] overflow-hidden text-black bg-[#fff9f2]">
-          <Skiper39 />
+          <Skiper39Client />
         </section>
       </div>
 

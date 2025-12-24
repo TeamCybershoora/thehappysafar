@@ -7,7 +7,7 @@ export const curatedPackages: PackageDetails[] = [
     duration: "6N/7D",
     priceTag: "Price on Request",
     image:
-      "https://images.unsplash.com/photo-1477587458883-47145ed94245?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "/images/jaipur.jpg",
     summary: "Jaipur, Jaipur Sighteening, Jaipur to jodhpur, Jodhpur, Jodhpur to Udaipur, UADIPUR, Depart from udaipur",
     itinerary: [
       `Jaipur :: Arrive at Jaipur railway / airport, get transferred to the hotel and check in.
@@ -207,7 +207,7 @@ Departure to delhi in the same private vehicle Delhi airport / Railway Station.`
     duration: "10N/11D",
     priceTag: "Price on Request",
     image:
-      "https://images.unsplash.com/photo-1636788988342-bc124fcfd953?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "/images/raj.jpg",
     summary: `Arrival in Jaipur, Local Sightseeing of Jaipur, Jaipur to Bikaner, Bikaner to Jaisalmer, Jaisalmer Local Sightseeing, Jaisalmer to Jodhpur, Jodhpur to Mount Abu, Mount Abu Local Sightseeing , Mount Abu to Udaipur, Udaipur Local Sightseeing, Udaipur to Ajmer, Ajmer to Jaipur`,
     itinerary: [
       `Arrival in Jaipur | Welcome to the Pink City  :: Meet our representative on your arrival at Jaipur Railway Station / Airport.
@@ -469,8 +469,7 @@ Get transferred to Jaipur airport / Railway station `
     title: "JAISALMER NEW YEAR’S TRIP",
     duration: "2N/3D",
     priceTag: "Price on Request",
-    image:
-      "https://images.unsplash.com/photo-1636996627212-ce5d24bca63a?q=80&w=1460&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    image: "/images/newyear.webp",
     summary: "Arrival in Jaisalmer, New Year Bash , Departure",
     itinerary: [
       `Arrival in Jaisalmer :: As you arrive in Jaisalmer, our representative will greet you and escort you to the pre
@@ -585,7 +584,7 @@ team will drop you off at Udaipur Airport/Railway Station for your onward journe
   },
   {
     id: "PACKAGE  07",
-    title: "PINCK CITYY TOUR",
+    title: "PINCK CITY TOUR",
     duration: "1N/2D",
     priceTag: "Price on Request",
     image: "/images/nahargard.jpg",

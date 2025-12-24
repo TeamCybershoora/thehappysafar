@@ -1,12 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import "./global.css";
-import Footer from "./components/Footer";
 import { ThemeProvider } from "./components/ThemeProvider";
-import LenisProvider from "./components/LenisProvider";
-import FloatingNav from "./components/FloatingNav";
 import SplashLoader from "./components/SplashLoader";
 import GlobalEnquiryModal from "./components/GlobalEnquiryModal";
-import InspectGuard from "./components/guards/InspectGuard";
+import RouteLayout from "./components/RouteLayout";
+// import InspectGuard from "./components/guards/InspectGuard";
 
 const BASE_URL = "https://www.thehappysafar.com";
 
@@ -115,18 +113,16 @@ export default function RootLayout({
     <html lang="en" data-theme="light" suppressHydrationWarning>
       <body className="antialiased">
         <ThemeProvider>
-          <InspectGuard />
+          {/* <InspectGuard /> */}
           <SplashLoader>
-            <LenisProvider>
+            <RouteLayout>
               <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
               />
               <main>{children}</main>
               <GlobalEnquiryModal />
-              <Footer />
-              <FloatingNav />
-            </LenisProvider>
+            </RouteLayout>
           </SplashLoader>
         </ThemeProvider>
       </body>

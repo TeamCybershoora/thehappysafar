@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { MoveRight, PhoneCall, X } from "lucide-react";
+import { ChevronDown, MoveRight, PhoneCall, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { PackageDetails } from "@/types/packages";
+import type { PackageDetails, PackageSource } from "@/types/packages";
 import { MapPinIcon } from "./ui/MapPinIcon";
 
 const CALL_NUMBER = "+917426933288";
@@ -21,6 +21,21 @@ const detailPageMap: Record<string, string> = {
   "PACKAGE 06": "/package6",
   "PACKAGE 07": "/package7",
   "PACKAGE 08": "/package8",
+};
+
+const cityDetailPageMap: Record<string, string> = {
+  "PACKAGE 01": "/city/city1",
+  "PACKAGE 02": "/city/city2",
+  "PACKAGE 03": "/city/city3",
+  "PACKAGE 04": "/city/city4",
+  "PACKAGE 05": "/city/city5",
+  "PACKAGE 06": "/city/city6",
+  "PACKAGE 07": "/city/city7",
+  "PACKAGE 08": "/city/city8",
+  "PACKAGE 09": "/city/city9",
+  "PACKAGE 10": "/city/city10",
+  "PACKAGE 11": "/city/city11",
+  "PACKAGE 12": "/city/city12",
 };
 
 const buildDetailPath = (rawId: string) => `/packages/${encodeURIComponent(normalizeId(rawId))}`;
@@ -64,9 +79,11 @@ const parseItineraryStep = (step: string) => {
 export default function PackageCard({
   details,
   className,
+  source = "curated",
 }: {
   details: PackageDetails;
   className?: string;
+  source?: PackageSource;
 }) {
   const {
     title,
@@ -83,11 +100,21 @@ export default function PackageCard({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitState, setSubmitState] = useState<"idle" | "success" | "error">("idle");
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [showLocations, setShowLocations] = useState(false);
   const router = useRouter();
   const normalizedId = normalizeId(details.id);
   const normalizedBaseId = normalizedId.replace(/-\d+$/, "");
+  const mapSource = source === "city" ? cityDetailPageMap : detailPageMap;
+  const fallbackCityPath = `/city/${encodeURIComponent(
+    normalizedId
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, ""),
+  )}`;
   const detailPath =
-    detailPageMap[normalizedId] ?? detailPageMap[normalizedBaseId] ?? buildDetailPath(details.id);
+    mapSource[normalizedId] ??
+    mapSource[normalizedBaseId] ??
+    (source === "city" ? fallbackCityPath : buildDetailPath(details.id));
 
   const headlineTags = useMemo(() => {
     return itinerary
@@ -268,23 +295,48 @@ export default function PackageCard({
           <div>
             <h3 className="text-lg font-semibold text-zinc-900 sm:text-xl">{title}</h3>
             <div className="mt-2 text-[12px] text-zinc-600 sm:text-sm">
-              <div className="flex items-start gap-2">
-                <MapPinIcon size={20} className="mt-0.5 text-[#8a410d]" />
-                <div className="mt-0.5 flex flex-wrap items-center gap-1.5 text-[10px] uppercase tracking-[0.18em] text-[#8a410d] sm:gap-2 sm:text-[11px]">
-                  {summarySegments.length > 0 ? (
-                    summarySegments.map((segment, idx) => (
-                      <span key={`${segment}-${idx}`} className="flex items-center gap-2">
-                        <span className="rounded-full border border-[#f4c88a] bg-[#fff5e6] px-3 py-1 font-semibold">
-                          {segment}
-                        </span>
-                        {idx < summarySegments.length - 1 && (
-                          <span className="text-[#d97706]">→</span>
-                        )}
-                      </span>
-                    ))
-                  ) : (
-                    <span className="text-zinc-600 normal-case tracking-normal">{summary}</span>
+              <div className="rounded-2xl border border-[#f4c88a]/60 bg-[#fff7eb] p-3">
+                <button
+                  type="button"
+                  onClick={() => setShowLocations((prev) => !prev)}
+                  className="flex w-full items-center justify-between gap-3 text-left text-[11px] font-semibold uppercase tracking-[0.2em] text-[#8a410d] transition hover:text-[#7a360b] sm:text-[12px]"
+                  aria-expanded={showLocations}
+                >
+                  <span className="flex items-center gap-2">
+                    <MapPinIcon size={18} className="text-[#8a410d]" />
+                    <span>Click to see locations</span>
+                  </span>
+                  <ChevronDown
+                    className={cn(
+                      "h-4 w-4 transition-transform",
+                      showLocations ? "rotate-180" : "rotate-0"
+                    )}
+                  />
+                </button>
+                <div
+                  className={cn(
+                    "grid transition-[grid-template-rows] duration-300 ease-out",
+                    showLocations ? "mt-3 grid-rows-[1fr]" : "mt-0 grid-rows-[0fr]"
                   )}
+                >
+                  <div className="overflow-hidden">
+                    <div className="flex flex-wrap items-center gap-1.5 pt-2 text-[10px] uppercase tracking-[0.18em] text-[#8a410d] sm:gap-2 sm:text-[11px]">
+                      {summarySegments.length > 0 ? (
+                        summarySegments.map((segment, idx) => (
+                          <span key={`${segment}-${idx}`} className="flex items-center gap-2">
+                            <span className="rounded-full border border-[#f4c88a] bg-[#fff5e6] px-3 py-1 font-semibold">
+                              {segment}
+                            </span>
+                            {idx < summarySegments.length - 1 && (
+                              <span className="text-[#d97706]">→</span>
+                            )}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-zinc-600 normal-case tracking-normal">{summary}</span>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
               <p className="mt-3 rounded-2xl bg-amber-50/70 px-4 py-3 text-xs text-zinc-600 shadow-sm">

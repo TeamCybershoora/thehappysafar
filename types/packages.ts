@@ -9,3 +9,5 @@ export type PackageDetails = {
   ctaLink?: string;
   whatsappLink?: string;
 };
+
+export type PackageSource = "curated" | "city";

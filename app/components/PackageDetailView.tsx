@@ -2,7 +2,9 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { cityPackages } from "@/data/cities";
 import { curatedPackages } from "@/data/packages";
+import type { PackageSource } from "@/types/packages";
 import PackageCard from "./PackageCard";
 import Navbar from "./Navbar";
 import {
@@ -31,6 +33,11 @@ type RoutePoint = {
   lng: number;
   label: string;
 };
+
+interface PackageDetailViewProps {
+  packageId: string;
+  source?: PackageSource;
+}
 
 declare global {
   interface Window {
@@ -190,9 +197,11 @@ function RouteMap({ points }: { points: RoutePoint[] }) {
   return <div ref={mapContainerRef} className="h-64 w-full" />;
 }
 
-export default function PackageDetailView({ packageId }: { packageId: string }) {
+export default function PackageDetailView({ packageId, source = "curated" }: PackageDetailViewProps) {
+  const dataset = source === "city" ? cityPackages : curatedPackages;
+  const isCitySource = source === "city";
   const normalizedTarget = normalizeId(packageId);
-  const packageIndex = curatedPackages.findIndex((pkg) => normalizeId(pkg.id) === normalizedTarget);
+  const packageIndex = dataset.findIndex((pkg) => normalizeId(pkg.id) === normalizedTarget);
 
   if (packageIndex === -1) {
     return (
@@ -205,7 +214,7 @@ export default function PackageDetailView({ packageId }: { packageId: string }) 
     );
   }
 
-  const travelPackage = curatedPackages[packageIndex];
+  const travelPackage = dataset[packageIndex];
   const [activeTab, setActiveTab] = useState<TabKey>("detail");
   const [openDetailIndex, setOpenDetailIndex] = useState<number | null>(null);
   const [showRouteMap, setShowRouteMap] = useState(false);
@@ -225,11 +234,19 @@ export default function PackageDetailView({ packageId }: { packageId: string }) 
     return summarySegments.slice(0, 5);
   }, [summarySegments]);
 
+  const locationSummary = useMemo(() => {
+    const locations = summarySegments.slice(0, 3);
+    if (locations.length === 0) {
+      return travelPackage.summary.trim();
+    }
+    return locations.join(" · ");
+  }, [summarySegments, travelPackage.summary]);
+
   const itinerary = useMemo(() => {
     return travelPackage.itinerary.map((step, index) => formatItinerary(step, index));
   }, [travelPackage.itinerary]);
 
-  const otherPackages = curatedPackages.filter((_, index) => index !== packageIndex);
+  const otherPackages = dataset.filter((_, index) => index !== packageIndex);
 
   const routePoints = useMemo(() => {
     const seen = new Set<string>();
@@ -799,7 +816,7 @@ export default function PackageDetailView({ packageId }: { packageId: string }) 
             </span>
             <span className="flex items-center gap-2">
               <MapPin className="h-4 w-4" />
-              Jaipur · Jodhpur · Udaipur
+              {locationSummary}
             </span>
           </div>
           <div className="mt-6 flex flex-wrap gap-2 sm:mt-8 sm:gap-3">
@@ -1065,15 +1082,21 @@ export default function PackageDetailView({ packageId }: { packageId: string }) 
       {otherPackages.length > 0 && (
         <section className="mx-auto mt-12 max-w-6xl px-4 pb-24 sm:px-6">
           <div className="flex flex-col gap-2 pb-8">
-            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-amber-600">More journeys</p>
-            <h2 className="text-3xl font-semibold text-zinc-900">Browse more handcrafted Rajasthan escapes</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.35em] text-amber-600">
+              {isCitySource ? "More city tours" : "More journeys"}
+            </p>
+            <h2 className="text-3xl font-semibold text-zinc-900">
+              {isCitySource ? "Explore other handcrafted city escapes" : "Browse more handcrafted Rajasthan escapes"}
+            </h2>
             <p className="text-base text-zinc-600">
-              Discover a few other curated circuits our planners can personalise for your crew.
+              {isCitySource
+                ? "Discover a few other city-focused itineraries our planners can personalise for your crew."
+                : "Discover a few other curated circuits our planners can personalise for your crew."}
             </p>
           </div>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {otherPackages.map((pkg) => (
-              <PackageCard key={pkg.id} details={pkg} />
+              <PackageCard key={pkg.id} details={pkg} source={source} />
             ))}
           </div>
         </section>

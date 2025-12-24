@@ -7,6 +7,7 @@ export type StoredSession = {
   expiresAt: number;
   adminName?: string;
   adminEmail?: string;
+  properLogin?: boolean; // Track if logged in via secret method (not direct URL)
 };
 
 const getNow = () => Date.now();
@@ -37,6 +38,7 @@ export const persistAdminSession = (admin?: { name?: string; email?: string }) =
       expiresAt,
       adminName: admin?.name,
       adminEmail: admin?.email,
+      properLogin: true, // Mark as legitimate login via secret method
     })
   );
 };
@@ -56,4 +58,15 @@ export const getActiveAdmin = () => {
   const { adminName, adminEmail } = session;
   if (!adminName && !adminEmail) return null;
   return { name: adminName, email: adminEmail };
+};
+
+// Check if admin has proper login (via secret method, not direct URL)
+export const hasProperLogin = () => {
+  const session = readSession();
+  if (!session) return false;
+  if (session.expiresAt <= getNow()) {
+    clearAdminSession();
+    return false;
+  }
+  return session.properLogin === true;
 };

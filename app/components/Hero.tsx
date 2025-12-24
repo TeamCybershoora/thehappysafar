@@ -1,27 +1,19 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import CurvedLoop from "../components/CurvedLoop";
 import { curatedPackages } from "@/data/packages";
 import Navbar from "./Navbar";
 
-const HERO_BACKGROUNDS = [
-  "./images/christmas.jpg",
-  "./images/hawamahal.jpg",
-  "./images/honeymoon.jpg",
-  "./images/jaisalmair.jpg",
-  "./images/jodhpur.jpg",
-  "./images/rajasthan.jpg",
-  "./images/nahargard.jpg",
-  "./images/taj.jpg",
-];
-
 export default function Hero() {
-  const [activeBgIndex, setActiveBgIndex] = useState(0);
-  const [slideshowReady, setSlideshowReady] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showSearchOverlay, setShowSearchOverlay] = useState(false);
+  const heroPackages = useMemo(
+    () => curatedPackages.filter((pkg) => Boolean(pkg.image)).slice(0, 5),
+    [],
+  );
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [outgoingIndex, setOutgoingIndex] = useState<number | null>(null);
+  const outgoingTimeoutRef = useRef<number | null>(null);
   const router = useRouter();
 
   const openEnquiry = useCallback(() => {
@@ -35,595 +27,413 @@ export default function Hero() {
   }, []);
 
   useEffect(() => {
-    let cancelled = false;
-    const preloaders = HERO_BACKGROUNDS.map(
-      (src) =>
-        new Promise<void>((resolve) => {
-          const img = new Image();
-          img.onload = () => resolve();
-          img.onerror = () => resolve();
-          img.src = src;
-        })
-    );
+    if (heroPackages.length <= 1) return undefined;
 
-    Promise.all(preloaders).then(() => {
-      if (!cancelled) {
-        setSlideshowReady(true);
-      }
-    });
+    const interval = window.setInterval(() => {
+      setActiveIndex((prev) => {
+        setOutgoingIndex(prev);
+        if (outgoingTimeoutRef.current) {
+          window.clearTimeout(outgoingTimeoutRef.current);
+        }
+        outgoingTimeoutRef.current = window.setTimeout(() => {
+          setOutgoingIndex(null);
+          outgoingTimeoutRef.current = null;
+        }, 650);
+
+        return (prev + 1) % heroPackages.length;
+      });
+    }, 5000);
 
     return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!slideshowReady || HERO_BACKGROUNDS.length <= 1) return undefined;
-    const interval = window.setInterval(() => {
-      setActiveBgIndex((prev) => (prev + 1) % HERO_BACKGROUNDS.length);
-    }, 2000);
-    return () => window.clearInterval(interval);
-  }, [slideshowReady]);
-
-  useEffect(() => {
-    if (!showSearchOverlay) return undefined;
-    const handleKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        setShowSearchOverlay(false);
+      window.clearInterval(interval);
+      if (outgoingTimeoutRef.current) {
+        window.clearTimeout(outgoingTimeoutRef.current);
+        outgoingTimeoutRef.current = null;
       }
     };
-    window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
-  }, [showSearchOverlay]);
+  }, [heroPackages.length]);
 
-  const matchingPackages = useMemo(() => {
-    const query = searchTerm.trim().toLowerCase();
-    if (!query) return [] as typeof curatedPackages;
-
-    return curatedPackages.filter((pkg) => {
-      const haystacks = [pkg.title, pkg.summary, pkg.duration, pkg.priceTag ?? "", pkg.itinerary.join(" \n ")];
-      return haystacks.some((text) => text.toLowerCase().includes(query));
-    });
-  }, [searchTerm]);
-
-  const limitedMatches = matchingPackages.slice(0, 8);
-
-  const handleSearchSubmit = () => {
-    if (!searchTerm.trim()) {
-      setShowSearchOverlay(false);
-      return;
-    }
-    if (limitedMatches.length > 0) {
-      handleResultClick(limitedMatches[0].id);
-    }
-  };
-
-  const handlePackageFocus = (packageId: string) => {
-    const safeId = window.CSS && window.CSS.escape ? window.CSS.escape(packageId) : packageId;
-    const node = document.querySelector(`[data-package-id="${safeId}"]`);
-    if (node instanceof HTMLElement) {
-      node.classList.add("package-card--highlight");
-      node.scrollIntoView({ behavior: "smooth", block: "center" });
-      window.setTimeout(() => {
-        node.classList.remove("package-card--highlight");
-      }, 2200);
-    }
-  };
-
-  const handleResultClick = (packageId: string) => {
-    handlePackageFocus(packageId);
-    setSearchTerm("");
-    setShowSearchOverlay(false);
-  };
+  const activePackage = heroPackages[activeIndex];
+  const outgoingPackage = outgoingIndex !== null ? heroPackages[outgoingIndex] : null;
 
   return (
     <>
       <Navbar />
-      <section className="hero-nz" aria-labelledby="hero-nz-title">
-        <div className="hero-nz__bg-stack" aria-hidden="true">
-          {HERO_BACKGROUNDS.map((imageUrl, index) => (
-            <div
-              key={imageUrl}
-              className={`hero-nz__bg-layer${index === activeBgIndex ? " hero-nz__bg-layer--active" : ""}`}
-              style={{ backgroundImage: `url(${imageUrl})` }}
+      <section className="package-hero" aria-live="polite">
+        {activePackage && (
+          <div className="package-hero__backdrop" aria-hidden="true">
+            <Image
+              src={activePackage.image}
+              alt=""
+              fill
+              priority
+              quality={70}
+              sizes="100vw"
+              style={{ objectFit: "cover", objectPosition: "center" }}
             />
-          ))}
-        </div>
-        <div className="hero-nz__overlay" />
-        <div className="hero-nz__fade" aria-hidden="true" />
+          </div>
+        )}
+        <div className="package-hero__gradient" aria-hidden="true" />
+        <div className="package-hero__blend" aria-hidden="true" />
 
-        <div className="hero-nz__chrome">
-          <div className="hero-nz__top">
-            <div className="hero-nz__indicator" aria-hidden="true" />
-            <span>Tailor every escape with The Happy Safar</span>
+        <div className="package-hero__layout">
+          <div className="package-hero__content">
+            <div className="package-hero__eyebrow">Featured Journeys</div>
+            <h1 className="package-hero__title">
+              <span
+                key={activePackage ? activePackage.id : "fallback"}
+                className="package-hero__title-text"
+              >
+                {activePackage ? activePackage.title.trim() : "Signature Rajasthan Escapes"}
+              </span>
+            </h1>
+            {activePackage && (
+              <p className="package-hero__meta">
+                <span>{activePackage.duration}</span>
+                {activePackage.priceTag ? <span>{activePackage.priceTag}</span> : null}
+              </p>
+            )}
 
-            <div className="hero-nz__search" role="search">
-              <input
-                type="text"
-                placeholder="Search Rajasthan journeys"
-                aria-label="Search Rajasthan journeys"
-                value={searchTerm}
-                onChange={(event) => {
-                  setSearchTerm(event.target.value);
-                  const hasQuery = event.target.value.trim().length > 0;
-                  setShowSearchOverlay(hasQuery);
-                }}
-                onFocus={() => {
-                  if (searchTerm.trim().length > 0) {
-                    setShowSearchOverlay(true);
-                  }
-                }}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") {
-                    event.preventDefault();
-                    handleSearchSubmit();
-                  }
-                }}
-              />
-              <button type="button" onClick={handleSearchSubmit}>
-                Search
+            <div className="package-hero__cta-row">
+              <button type="button" className="package-hero__cta-primary" onClick={openEnquiry}>
+                Enquire Now
               </button>
-              {showSearchOverlay && (
-                <div className="hero-search-inline">
-                  {limitedMatches.length > 0 ? (
-                    <ul>
-                      {limitedMatches.map((pkg) => (
-                        <li key={pkg.id}>
-                          <button type="button" onClick={() => handleResultClick(pkg.id)}>
-                            <span className="hero-search__title">{pkg.title}</span>
-                            <span className="hero-search__meta">{pkg.duration} • {pkg.priceTag ?? "Price on request"}</span>
-                            <span className="hero-search__summary">{pkg.summary}</span>
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                  ) : (
-                    <div className="hero-search__empty">
-                      <p>We couldn’t find a journey that matches “{searchTerm.trim()}”.</p>
-                      <p>Try different keywords or explore the featured cards below.</p>
-                    </div>
-                  )}
-                </div>
-              )}
+              <button
+                type="button"
+                className="package-hero__cta-ghost"
+                onClick={() => router.push("/packages")}
+              >
+                Explore More
+              </button>
             </div>
           </div>
 
-          <div className="hero-nz__main">
-            <div className="hero-nz__text">
-              <div className="hero-nz__heading-block">
-                <p className="hero-nz__eyebrow">The Happy Safar</p>
-                <h1 id="hero-nz-title">
-                  <span>Rajasthan</span> Awaits You
-                </h1>
+          <div className="package-hero__cards" aria-hidden="true">
+            {outgoingPackage ? (
+              <div key={`out-${outgoingPackage.id}`} className="package-hero-card package-hero-card--out">
+                <div className="package-hero-card__img">
+                  <Image
+                    src={outgoingPackage.image}
+                    alt=""
+                    fill
+                    sizes="420px"
+                    quality={70}
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
+                <div className="package-hero-card__overlay" />
+                <div className="package-hero-card__text">
+                  <div className="package-hero-card__title">{outgoingPackage.title.trim()}</div>
+                  <div className="package-hero-card__meta">
+                    <span>{outgoingPackage.duration}</span>
+                    {outgoingPackage.priceTag ? <span>{outgoingPackage.priceTag}</span> : null}
+                  </div>
+                </div>
               </div>
-              <div className="hero-nz__desc-grid">
-                <p>
-                  From Jaipur’s pink boulevards to the dunes of Jaisalmer and the blue lanes of Jodhpur, The Happy Safar
-                  scripts soulful Rajasthan stories. We obsess over palace stays, chauffeured drives, and local hosts so
-                  every leg of your desert escape feels effortless.
-                </p>
-              </div>
+            ) : null}
 
-              <div className="hero-nz__cta-row">
-                <button type="button" className="hero-nz__cta-primary" onClick={openEnquiry}>
-                  Plan with THS
-                </button>
-                <button
-                  type="button"
-                  className="hero-nz__cta-ghost"
-                  onClick={() => router.push("/packages")}
-                >
-                  See sample routes
-                </button>
+            {activePackage ? (
+              <div key={`in-${activePackage.id}`} className="package-hero-card package-hero-card--in">
+                <div className="package-hero-card__img">
+                  <Image
+                    src={activePackage.image}
+                    alt=""
+                    fill
+                    sizes="(max-width: 900px) 100vw, 420px"
+                    quality={70}
+                    style={{ objectFit: "cover" }}
+                  />
+                </div>
+                <div className="package-hero-card__overlay" />
+                <div className="package-hero-card__text">
+                  <div className="package-hero-card__title">{activePackage.title.trim()}</div>
+                  <div className="package-hero-card__meta">
+                    <span>{activePackage.duration}</span>
+                    {activePackage.priceTag ? <span>{activePackage.priceTag}</span> : null}
+                  </div>
+                </div>
               </div>
-            </div>
-
-            <div className="hero-nz__rail-stack">
-              <div className="hero-nz__enquire-launch">
-                <p className="hero-nz__enquire-label">Need help planning?</p>
-                <button type="button" onClick={openEnquiry}>
-                  Enquire Now
-                </button>
-                <span>Talk to a Rajasthan planner in under 10 minutes.</span>
-              </div>
-            </div>
+            ) : null}
           </div>
         </div>
-
-        <CurvedLoop marqueeText="The Happy Safar ✦ Across Rajasthan ✦ Custom Desert Trails ✦" speed={7} curveAmount={200} />
       </section>
       <style jsx>{`
-        .hero-nz {
+        .package-hero {
           position: relative;
-          min-height: min(105vh, 1000px);
+          min-height: min(96vh, 960px);
           width: 100%;
-          overflow: hidden;
+          padding: clamp(6rem, 12vw, 8rem) clamp(1.5rem, 6vw, 6rem) clamp(4rem, 12vw, 6rem);
+          display: flex;
+          align-items: center;
           color: #fff;
-          border-radius: 0;
-          --nav-height: 96px;
-          margin-top: -1rem;
-          padding-top: var(--nav-height);
+          overflow: hidden;
         }
 
-        .hero-nz__fade {
+        .package-hero__backdrop {
           position: absolute;
-          inset: auto 0 0 0;
-          height: 160px;
-          background: linear-gradient(180deg, rgba(255, 251, 235, 0) 60%, rgba(255, 251, 235, 0.85) 87%, #FFFBEB 100%);
-          pointer-events: none;
+          inset: 0;
           z-index: 0;
         }
 
-        .hero-nz__bg-stack {
+        .package-hero__gradient {
           position: absolute;
           inset: 0;
-          overflow: hidden;
+          z-index: 1;
+          background: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.12), transparent 40%),
+            linear-gradient(180deg, rgba(7, 12, 20, 0.1) 0%, rgba(7, 12, 20, 0.8) 65%, rgba(7, 12, 20, 0.94) 100%);
         }
-        .hero-nz__bg-layer {
+
+        .package-hero__blend {
           position: absolute;
-          inset: 0;
-          background-size: cover;
-          background-position: center;
-          filter: saturate(1.05);
-          opacity: 0;
-          transition: opacity 0.9s ease-in-out;
-          will-change: opacity;
-        }
-        .hero-nz__bg-layer--active {
-          opacity: 1;
-        }
-
-        .hero-nz__overlay {
-          position: absolute;
-          inset: 0;
-          background: linear-gradient(180deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.75));
-        }
-
-        .hero-nz__chrome {
-          position: relative;
-          z-index: 2;
-          display: flex;
-          flex-direction: column;
-          gap: 2rem;
-          padding: clamp(1.5rem, 4vw, 3rem);
-          height: 100%;
-        }
-
-        .hero-nz__top {
-          display: flex;
-          align-items: center;
-          gap: 1.5rem;
-          font-size: 0.95rem;
-          text-transform: uppercase;
-          letter-spacing: 0.15em;
-        }
-
-        .hero-nz__indicator {
-          width: 120px;
-          height: 6px;
-          border-radius: 999px;
-          background: #F46F12;
-        }
-
-        .hero-nz__search {
-          margin-left: auto;
-          display: inline-flex;
-          align-items: center;
-          gap: 0.5rem;
-          padding: 0.45rem 0.6rem 0.45rem 1rem;
-          background: rgba(255, 255, 255, 0.12);
-          border-radius: 999px;
-          backdrop-filter: blur(12px);
-          position: relative;
-          z-index: 10;
-        }
-
-        .hero-nz__search input {
-          background: transparent;
-          border: none;
-          color: #fff;
-          font-size: 0.95rem;
-          width: 180px;
-        }
-
-        .hero-nz__search input::placeholder {
-          color: rgba(255, 255, 255, 0.7);
-        }
-
-        .hero-nz__search input:focus {
-          outline: none;
-        }
-
-        .hero-nz__search button {
-          border: none;
-          border-radius: 999px;
-          padding: 0.45rem 1.1rem;
-          font-size: 0.9rem;
-          font-weight: 600;
-          color: #111;
-          background: #fff;
-          cursor: pointer;
-        }
-
-        .hero-search-inline {
-          position: absolute;
-          top: calc(100% + 0.5rem);
+          left: 0;
           right: 0;
-          width: min(420px, 80vw);
-          max-height: 320px;
-          overflow-y: auto;
-          border-radius: 20px;
-          background: rgba(255, 255, 255, 0.97);
-          box-shadow: 0 28px 60px rgba(15, 23, 42, 0.35);
-          padding: 1rem;
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-          animation: hero-search-pop 0.25s ease;
+          bottom: 0;
+          height: 160px;
+          z-index: 2;
+          pointer-events: none;
+          background: linear-gradient(180deg, rgba(255, 251, 235, 0) 80%, #fffbeb 100%);
         }
 
-        .hero-search-inline ul {
-          list-style: none;
-          padding: 0;
-          margin: 0;
-          display: grid;
-          gap: 0.6rem;
-        }
-
-        .hero-search-inline li button {
+        .package-hero__layout {
+          position: relative;
+          z-index: 3;
           width: 100%;
-          text-align: left;
-          border: none;
-          border-radius: 16px;
-          background: linear-gradient(135deg, rgba(253, 230, 138, 0.45), rgba(255, 247, 219, 0.95));
-          padding: 0.9rem 1.1rem;
+          display: grid;
+          grid-template-columns: minmax(0, 1.35fr) minmax(320px, 1fr);
+          gap: clamp(2rem, 5vw, 5rem);
+          align-items: center;
+        }
+
+        .package-hero__content {
+          max-width: 720px;
+          padding: 1rem;
+          display: grid;
+          gap: clamp(1rem, 3vw, 1.8rem);
+        }
+
+        .package-hero__eyebrow {
+          font-size: 0.85rem;
+          letter-spacing: 0.45em;
+          text-transform: uppercase;
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.78);
+        }
+
+        .package-hero__title {
+          font-size: clamp(3rem, 8vw, 4.8rem);
+          line-height: 0.95;
+          margin: 0;
+          font-family: "Paralucent-DemiBold", "Sora", sans-serif;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+        }
+
+        .package-hero__title-text {
+          display: inline-block;
+          animation: packageHeroTitleIn 600ms ease-out;
+        }
+
+        @keyframes packageHeroTitleIn {
+          0% {
+            opacity: 0;
+            transform: translateY(30px) scale(0.96);
+            letter-spacing: 0.6em;
+          }
+          55% {
+            opacity: 1;
+            transform: translateY(0) scale(1.02);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            letter-spacing: 0.04em;
+          }
+        }
+
+        .package-hero__meta {
           display: flex;
-          flex-direction: column;
-          gap: 0.3rem;
+          gap: 1rem;
+          font-size: 0.95rem;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          font-weight: 600;
+          color: rgba(255, 255, 255, 0.72);
+        }
+
+        .package-hero__cta-row {
+          display: flex;
+          gap: 1rem;
+          flex-wrap: wrap;
+        }
+
+        .package-hero__cta-primary {
+          border-radius: 999px;
+          padding: 0.85rem 2.1rem;
+          font-size: 1rem;
+          font-weight: 700;
+          border: none;
+          background: linear-gradient(135deg, #ff924a, #f46f12);
+          color: #0b101a;
           cursor: pointer;
           transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .hero-search-inline li button:hover {
+        .package-hero__cta-primary:hover {
           transform: translateY(-2px);
-          box-shadow: 0 15px 35px rgba(250, 204, 21, 0.28);
+          box-shadow: 0 18px 30px rgba(244, 111, 18, 0.4);
         }
 
-        .hero-search__summary {
-          font-size: 0.8rem;
-          color: rgba(15, 23, 42, 0.72);
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-
-        .hero-search__empty {
-          text-align: center;
-          font-size: 0.85rem;
-          color: rgba(51, 65, 85, 0.85);
-        }
-
-        .hero-nz__main {
-          display: grid;
-          grid-template-columns: minmax(0, 2.8fr) minmax(200px, 1fr);
-          gap: clamp(2rem, 5vw, 5rem);
-          align-items: end;
-        }
-
-        .hero-nz__heading-block {
-          background: transparent;
-          border-radius: 24px;
-          padding: 1rem 1.5rem;
-          backdrop-filter: blur(5px);
-          border: none;
-          display: inline-block;
-          width: fit-content;
-        }
-
-        .hero-nz__text h1 {
-          font-family: "Paralucent-DemiBold";
-          font-size: clamp(3rem, 7vw, 5.5rem);
-          line-height: 0.95;
-          margin: 0;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-        }
-
-        .hero-nz__text h1 span {
-          display: block;
-          color: #F46F12;
-        }
-
-        .hero-nz__eyebrow {
-          font-family: "Paralucent-DemiBold";
-          text-transform: uppercase;
-          letter-spacing: 0.4em;
-          color: #ffffff;
-          margin-bottom: 0.4rem;
-        }
-
-        .hero-nz__desc-grid {
-          margin-top: 1.5rem;
-          max-width: 50ch;
-          color: rgba(255, 255, 255, 0.9);
-          font-size: 1rem;
-          line-height: 1.6;
-        }
-
-        .hero-nz__cta-row {
-          margin-top: 2rem;
-          display: flex;
-          gap: 1.25rem;
-          flex-wrap: wrap;
-        }
-
-        .hero-nz__cta-primary {
-          border-radius: 999px;
-          padding: 0.85rem 2.4rem;
-          font-size: 1rem;
-          font-weight: 700;
-          background: #ffffff;
-          color: #F46F12;
-          text-decoration: none;
-         
-        }
-
-        .hero-nz__cta-ghost {
+        .package-hero__cta-ghost {
           border-radius: 999px;
           padding: 0.85rem 2rem;
           font-size: 1rem;
-          font-weight: 600;
-          border: 1px solid rgba(255, 255, 255, 0.6);
-          text-decoration: none;
-          color: #fff;
-          backdrop-filter: blur(10px);
-        }
-
-        .hero-nz__rail {
-          background: #ffffff;
-          border-radius: 28px;
-          padding: 1.75rem 1.25rem;
-          display: flex;
-          flex-direction: column;
-          gap: 0.65rem;
-          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05), 0 30px 50px rgba(0, 0, 0, 0.35);
-        }
-
-        .hero-nz__rail-label {
-          text-transform: uppercase;
-          letter-spacing: 0.3em;
-          font-family: "Paralucent-DemiBold";
-          font-size: 0.85rem;
-          color: #F46F12;
-          margin-bottom: 0.5rem;
-        }
-
-        .hero-nz__rail button {
-          border: none;
-          background: #FDD9BF;
-          border-radius: 999px;
-          color: #F46F12;
-          padding: 0.65rem 1rem;
-          font-size: 0.95rem;
-          text-align: left;
-          cursor: pointer;
-          transition: background 0.2s ease, transform 0.2s ease;
-        }
-
-        .hero-nz__rail button:hover {
-          background: #F46F12;
-          color: #fff;
-          transform: translateX(4px);
-        }
-
-        .hero-nz__rail-stack {
-          display: flex;
-          flex-direction: column;
-          gap: 1.1rem;
-        }
-
-        .hero-nz__enquire-launch {
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-          background: rgba(255, 255, 255, 0.08);
-          border-radius: 20px;
-          backdrop-filter: blur(12px);
-          padding: 1.1rem 1.5rem;
-          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
-        }
-
-        .hero-nz__enquire-label {
-          font-size: 0.85rem;
-          text-transform: uppercase;
-          letter-spacing: 0.3em;
-          color: rgba(255, 255, 255, 0.8);
-          margin: 0;
-        }
-
-        .hero-nz__enquire-launch button {
-          border: none;
-          border-radius: 999px;
-          padding: 0.85rem 1.5rem;
-          font-size: 1rem;
           font-weight: 700;
+          border: 1px solid rgba(255, 255, 255, 0.28);
+          background: rgba(255, 255, 255, 0.08);
           color: #fff;
-          background: #f46f12;
           cursor: pointer;
-          transition: transform 0.2s ease;
+          backdrop-filter: blur(10px);
+          transition: border-color 0.2s ease, background 0.2s ease;
         }
 
-        .hero-nz__enquire-launch button:hover {
-          transform: translateY(-2px);
+        .package-hero__cta-ghost:hover {
+          border-color: rgba(244, 111, 18, 0.65);
+          background: rgba(244, 111, 18, 0.18);
         }
 
-        .hero-nz__enquire-launch span {
-          margin: 0;
+        .package-hero__cards {
+          position: relative;
+          height: min(420px, 48vh);
+          display: grid;
+          align-items: center;
+          justify-items: end;
+        }
+
+        .package-hero-card {
+          position: absolute;
+          right: 0;
+          width: min(420px, 100%);
+          height: 100%;
+          border-radius: 28px;
+          overflow: hidden;
+          box-shadow: 0 24px 50px rgba(0, 0, 0, 0.45);
+          background: rgba(12, 18, 28, 0.4);
+          border: 1px solid rgba(255, 255, 255, 0.16);
+          will-change: transform, opacity;
+        }
+
+        .package-hero-card__img {
+          position: absolute;
+          inset: 0;
+        }
+
+        .package-hero-card__overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.78));
+        }
+
+        .package-hero-card__text {
+          position: absolute;
+          inset: auto 0 0 0;
+          padding: 1.25rem 1.25rem 1.1rem;
+          display: grid;
+          gap: 0.55rem;
+        }
+
+        .package-hero-card__title {
+          font-size: 1.1rem;
+          font-weight: 800;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+          color: rgba(255, 255, 255, 0.96);
+        }
+
+        .package-hero-card__meta {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0.75rem;
           font-size: 0.85rem;
-          color: rgba(255, 255, 255, 0.75);
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          font-weight: 700;
+          color: rgba(255, 255, 255, 0.82);
         }
 
-        @keyframes hero-search-pop {
-          from {
+        .package-hero-card--in {
+          animation: packageHeroCardIn 650ms ease both;
+          z-index: 2;
+        }
+
+        .package-hero-card--out {
+          animation: packageHeroCardOut 650ms ease both;
+          z-index: 1;
+        }
+
+        @keyframes packageHeroCardIn {
+          0% {
             opacity: 0;
-            transform: translateY(12px) scale(0.98);
+            transform: translateX(80px) scale(0.98);
           }
-          to {
+          100% {
             opacity: 1;
-            transform: translateY(0) scale(1);
+            transform: translateX(0) scale(1);
           }
         }
 
-        @keyframes fadeIn {
-          from {
+        @keyframes packageHeroCardOut {
+          0% {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+          }
+          100% {
             opacity: 0;
-          }
-          to {
-            opacity: 1;
+            transform: translateX(-40px) scale(0.98);
           }
         }
 
-        @keyframes slideUp {
-          from {
-            transform: translateY(20px);
-            opacity: 0;
-          }
-          to {
-            transform: translateY(0);
-            opacity: 1;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .hero-nz {
-            min-height: 90vh;
+        @media (max-width: 900px) {
+          .package-hero {
+            min-height: 88vh;
+            padding: clamp(5rem, 18vw, 7rem) clamp(1.25rem, 8vw, 3rem) clamp(3rem, 12vw, 5rem);
+            align-items: center;
           }
 
-          .hero-nz__top {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.75rem;
-          }
-
-          .hero-nz__search {
-            width: 100%;
-            justify-content: space-between;
-          }
-
-          .hero-nz__search input {
-            width: 100%;
-          }
-
-          .hero-nz__main {
+          .package-hero__layout {
             grid-template-columns: 1fr;
           }
 
-          .hero-nz__rail button {
-            flex: 1 1 calc(50% - 0.65rem);
+          .package-hero__cards {
+            justify-items: start;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .package-hero__title {
+            font-size: clamp(2.4rem, 11vw, 3rem);
+          }
+
+          .package-hero__meta {
+            flex-direction: column;
+            gap: 0.25rem;
+            letter-spacing: 0.28em;
+          }
+
+          .package-hero__cards {
+            display: none;
+          }
+
+          .package-hero__cta-row {
+            flex-direction: column;
+          }
+
+          .package-hero__cta-primary,
+          .package-hero__cta-ghost {
+            width: 100%;
+            justify-content: center;
           }
         }
       `}</style>
-    </> 
+    </>
   );
 }

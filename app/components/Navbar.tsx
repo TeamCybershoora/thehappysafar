@@ -4,19 +4,20 @@ import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Eye, EyeOff } from "lucide-react";
 import { MoonIcon } from "../components/ui/moon";
 import { SunIcon } from "../components/ui/sun";
 import { MenuIcon, type MenuIconHandle } from "../components/ui/menu";
 import { useTheme } from "./ThemeProvider";
 
 
-import { gsap } from "gsap";
-import { persistAdminSession, isAdminSessionActive } from "../lib/adminSession";
+import { persistAdminSession, hasProperLogin } from "../lib/adminSession";
 
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About Us" },
   { href: "/packages", label: "Packages" },
+  { href: "/city-tour", label: "City Tour" },
   { href: "/faq", label: "FAQ" },
   { href: "/contact", label: "Contact" },
 ];
@@ -28,6 +29,7 @@ export default function Navbar() {
   const [isNavHidden, setIsNavHidden] = useState(false);
   const [isAdminModalOpen, setIsAdminModalOpen] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [adminError, setAdminError] = useState("");
   const [isAdminSubmitting, setIsAdminSubmitting] = useState(false);
   const menuIconRef = useRef<MenuIconHandle | null>(null);
@@ -79,6 +81,7 @@ export default function Navbar() {
   const closeAdminModal = () => {
     setIsAdminModalOpen(false);
     setAdminPassword("");
+    setShowPassword(false);
     setAdminError("");
     secretClickCountRef.current = 0;
     if (secretClickTimerRef.current) {
@@ -88,7 +91,8 @@ export default function Navbar() {
   };
 
   const handleLogoSecretClick = () => {
-    if (isAdminSessionActive()) {
+    // Check if already properly logged in
+    if (hasProperLogin()) {
       router.push("/admin");
       return;
     }
@@ -172,26 +176,47 @@ export default function Navbar() {
     const menuEl = mobileMenuRef.current;
     const menuItems = menuEl.querySelectorAll("a, .mobile-enquire");
 
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (prefersReducedMotion) return;
+
     if (isMenuOpen) {
-      gsap.set(menuEl, { y: -20, opacity: 0 });
-      gsap.to(menuEl, { y: 0, opacity: 1, duration: 0.35, ease: "power3.out" });
-      gsap.fromTo(
-        menuItems,
-        { y: -10, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.25, ease: "power2.out", stagger: 0.06, delay: 0.05 }
-      );
+      void import("gsap").then(({ gsap }) => {
+        gsap.set(menuEl, { y: -20, opacity: 0 });
+        gsap.to(menuEl, { y: 0, opacity: 1, duration: 0.35, ease: "power3.out" });
+        gsap.fromTo(
+          menuItems,
+          { y: -10, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.25, ease: "power2.out", stagger: 0.06, delay: 0.05 },
+        );
+      });
     } else {
-      gsap.to(menuEl, { y: -15, opacity: 0, duration: 0.2, ease: "power2.inOut" });
+      void import("gsap").then(({ gsap }) => {
+        gsap.to(menuEl, { y: -15, opacity: 0, duration: 0.2, ease: "power2.inOut" });
+      });
     }
   }, [isMenuOpen]);
 
   useEffect(() => {
     if (!menuButtonRef.current) return;
-    gsap.to(menuButtonRef.current, {
-      rotate: isMenuOpen ? 90 : 0,
-      scale: isMenuOpen ? 1.05 : 1,
-      duration: 0.3,
-      ease: "power2.out",
+
+    const prefersReducedMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (prefersReducedMotion) return;
+
+    void import("gsap").then(({ gsap }) => {
+      gsap.to(menuButtonRef.current, {
+        rotate: isMenuOpen ? 90 : 0,
+        scale: isMenuOpen ? 1.05 : 1,
+        duration: 0.3,
+        ease: "power2.out",
+      });
     });
   }, [isMenuOpen]);
 
@@ -199,45 +224,45 @@ export default function Navbar() {
     <>
       <header className={`navbar ${isNavHidden ? "navbar--hidden" : ""}`}>
         <div className="navbar__inner">
-        <div
-          className="navbar__logo-block"
-          onClick={handleLogoSecretClick}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleLogoSecretClick();
-          }}
-          aria-label="The Happy Safar logo"
-        >
-          <Image
-            src="/logo.png"
-            alt="The Happy Safar logo"
-            width={28}
-            height={28}
-            className="logo-image"
-            priority
-          />
-        </div>
+          <div
+            className="navbar__logo-block"
+            onClick={handleLogoSecretClick}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleLogoSecretClick();
+            }}
+            aria-label="The Happy Safar logo"
+          >
+            <Image
+              src="/logo.png"
+              alt="The Happy Safar logo"
+              width={28}
+              height={28}
+              className="logo-image"
+              priority
+            />
+          </div>
 
-        {/* <div className="navbar__brand" aria-hidden="true">
+          {/* <div className="navbar__brand" aria-hidden="true">
           <span>The Happy Safar</span>
         </div> */}
 
-        <div className="navbar__pill">
-          <nav className="navbar__links">
-            {navLinks.map((link) => (
-              <div className="nav-btn" key={link.href}>
-                <Link href={link.href} onClick={(e) => handleAnchorNav(e, link.href)}>
-                  {link.label}
-                </Link>
-              </div>
-            ))}
-          </nav>
-        </div>
+          <div className="navbar__pill">
+            <nav className="navbar__links">
+              {navLinks.map((link) => (
+                <div className="nav-btn" key={link.href}>
+                  <Link href={link.href} onClick={(e) => handleAnchorNav(e, link.href)}>
+                    {link.label}
+                  </Link>
+                </div>
+              ))}
+            </nav>
+          </div>
 
-        <div className="navbar__actions">
-          <div className="theme-wrapper">
-            {/* <button
+          <div className="navbar__actions">
+            <div className="theme-wrapper">
+              {/* <button
               type="button"
               onClick={toggleTheme}
               aria-label="Toggle theme"
@@ -250,32 +275,32 @@ export default function Navbar() {
                 <SunIcon className="icon" size={24} />
               )}
             </button> */}
-          </div>
-          <button
-            type="button"
-            className="menu-toggle"
-            onClick={() => setIsMenuOpen((prev) => !prev)}
-            aria-label="Toggle navigation menu"
-            ref={menuButtonRef}
-          >
-            <MenuIcon
-              ref={menuIconRef}
-              className={`menu-icon ${isMenuOpen ? "open" : ""}`}
-              size={26}
-            />
-          </button>
-          <div className="enquire-wrapper desktop-only">
+            </div>
             <button
               type="button"
-              className="enquire-button"
-              onClick={() => {
-                window.dispatchEvent(new CustomEvent("open-enquiry"));
-              }}
+              className="menu-toggle"
+              onClick={() => setIsMenuOpen((prev) => !prev)}
+              aria-label="Toggle navigation menu"
+              ref={menuButtonRef}
             >
-              Enquire Now
+              <MenuIcon
+                ref={menuIconRef}
+                className={`menu-icon ${isMenuOpen ? "open" : ""}`}
+                size={26}
+              />
             </button>
+            <div className="enquire-wrapper desktop-only">
+              <button
+                type="button"
+                className="enquire-button"
+                onClick={() => {
+                  window.dispatchEvent(new CustomEvent("open-enquiry"));
+                }}
+              >
+                Enquire Now
+              </button>
+            </div>
           </div>
-        </div>
         </div>
 
         <div className={`mobile-menu ${isMenuOpen ? "open" : ""}`} ref={mobileMenuRef}>
@@ -313,15 +338,29 @@ export default function Navbar() {
             </header>
             <form onSubmit={handleAdminSubmit}>
               <label htmlFor="admin-password">Password</label>
-              <input
-                id="admin-password"
-                type="password"
-                value={adminPassword}
-                onChange={(e) => setAdminPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                autoFocus
-              />
+              <div className="password-input-wrapper">
+                <input
+                  id="admin-password"
+                  type={showPassword ? "text" : "password"}
+                  value={adminPassword}
+                  onChange={(e) => setAdminPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  autoFocus
+                />
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff size={18} />
+                  ) : (
+                    <Eye size={18} />
+                  )}
+                </button>
+              </div>
               {adminError && <p className="admin-modal__error">{adminError}</p>}
               <div className="admin-modal__actions">
                 <button type="button" onClick={closeAdminModal} className="admin-modal__secondary">
@@ -331,7 +370,7 @@ export default function Navbar() {
                   {isAdminSubmitting ? "Verifying..." : "Unlock"}
                 </button>
               </div>
-              {isAdminSessionActive() && (
+              {hasProperLogin() && (
                 <p className="admin-modal__hint">Session active. Unlocking will refresh access.</p>
               )}
             </form>
@@ -617,14 +656,47 @@ export default function Navbar() {
           color: #0f172a;
         }
 
+        .password-input-wrapper {
+          position: relative;
+          display: flex;
+          align-items: center;
+        }
+
         .admin-modal input {
           border-radius: 16px;
           border: 1px solid rgba(249, 115, 22, 0.35);
-          padding: 0.85rem 1rem;
+          padding: 0.85rem 3rem 0.85rem 1rem;
           font-size: 0.95rem;
           outline: none;
           background: #fff;
           transition: border 0.2s ease, box-shadow 0.2s ease;
+          width: 100%;
+        }
+
+        .password-toggle {
+          position: absolute;
+          right: 0.75rem;
+          top: 50%;
+          transform: translateY(-50%);
+          background: transparent;
+          border: none;
+          color: #64748b;
+          cursor: pointer;
+          padding: 0.35rem;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 8px;
+          transition: color 0.2s ease, background 0.2s ease;
+        }
+
+        .password-toggle:hover {
+          color: #f97316;
+          background: rgba(249, 115, 22, 0.08);
+        }
+
+        .password-toggle:active {
+          transform: translateY(-50%) scale(0.95);
         }
 
         .admin-modal input:focus {
